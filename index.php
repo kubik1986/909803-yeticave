@@ -1,8 +1,9 @@
 <?php
 $is_auth = rand(0, 1);
-
-$user_name = 'Вячеслав'; // имя пользователя
-$user_avatar_path = 'img/user.jpg'; // путь к аватарке пользователя
+$user = [
+    'name' => 'Вячеслав',
+    'avatar_path' => 'img/user.jpg'
+];
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -30,10 +31,10 @@ $user_avatar_path = 'img/user.jpg'; // путь к аватарке пользо
         <nav class="user-menu">
             <?php if ($is_auth === 1): ?>
                 <div class="user-menu__image">
-                    <img src="<?=$user_avatar_path; ?>" width="40" height="40" alt="Аватар пользователя">
+                    <img src="<?=$user['avatar_path']; ?>" width="40" height="40" alt="Аватар пользователя">
                 </div>
                 <div class="user-menu__logged">
-                    <p><?=htmlspecialchars($user_name); ?></p>
+                    <p><?=htmlspecialchars($user['name']); ?></p>
                     <a href="#">Выйти</a>
                 </div>
             <?php else: ?>
