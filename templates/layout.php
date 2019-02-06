@@ -21,7 +21,7 @@
             <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
 
             <nav class="user-menu">
-                <?php if ($is_auth): ?>
+                <?php if (count($user)): ?>
                     <div class="user-menu__image">
                         <img src="<?=$user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
                     </div>

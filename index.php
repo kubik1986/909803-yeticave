@@ -1,6 +1,5 @@
 <?php
 require('functions.php');
-$is_auth = rand(0, 1);
 $user = [
     'name' => 'Вячеслав',
     'avatar' => 'img/user.jpg'
@@ -71,6 +70,6 @@ $lots = [
 ];
 
 $page_content = include_template('index.php', ['categories' => $categories, 'lots' => $lots]);
-$layout_content = include_template('layout.php', ['content' => $page_content, 'title' => 'Главная', 'user' => $user, 'is_auth' => $is_auth, 'categories' => $categories]);
+$layout_content = include_template('layout.php', ['content' => $page_content, 'title' => 'Главная', 'user' => $user, 'categories' => $categories]);
 print($layout_content);
 ?>
