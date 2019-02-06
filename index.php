@@ -5,47 +5,65 @@ $user = [
     'avatar' => 'img/user.jpg'
 ];
 $categories = [
-    'boards' => 'Доски и лыжи',
-    'attachment' => 'Крепления',
-    'boots' => 'Ботинки',
-    'clothing' => 'Одежда',
-    'tools' => 'Инструменты',
-    'other' => 'Разное'
+    [
+        'name' => 'Доски и лыжи',
+        'class' => 'boards'
+    ],
+    [
+        'name' => 'Крепления',
+        'class' => 'attachment'
+    ],
+    [
+        'name' => 'Ботинки',
+        'class' => 'boots'
+    ],
+    [
+        'name' => 'Одежда',
+        'class' => 'clothing'
+    ],
+    [
+        'name' => 'Инструменты',
+        'class' => 'tools'
+    ],
+    [
+        'name' => 'Разное',
+        'class' => 'other'
+    ]
 ];
 $lots = [
     [
         'title' => '2014 Rossignol District Snowboard',
-        'category' => $categories['boards'],
+        'category' => 'Доски и лыжи',
         'price' => 10999,
         'img' => 'img/lot-1.jpg'
     ],
     [
         'title' => 'DC Ply Mens 2016/2017 Snowboard',
-        'category' => $categories['boards'],
+        'category' => 'Доски и лыжи',
         'price' => 159999,
         'img' => 'img/lot-2.jpg'
     ],
     [
         'title' => 'Крепления Union Contact Pro 2015 года размер L/XL',
-        'category' => $categories['attachment'],
+        'category' => 'Крепления',
         'price' => 8000,
         'img' => 'img/lot-3.jpg'
     ],
     [
         'title' => 'Ботинки для сноуборда DC Mutiny Charocal',
-        'category' => $categories['boots'],
+        'category' => 'Ботинки',
         'price' => 10999,
         'img' => 'img/lot-4.jpg'
     ],
     [
         'title' => 'Куртка для сноуборда DC Mutiny Charocal',
-        'category' => $categories['clothing'],
+        'category' => 'Одежда',
         'price' => 7500,
         'img' => 'img/lot-5.jpg'
     ],
     [
         'title' => 'Маска Oakley Canopy',
-        'category' => $categories['other'],
+        'category' => 'Разное',
         'price' => 5400,
         'img' => 'img/lot-6.jpg'
     ]
@@ -53,10 +71,8 @@ $lots = [
 
 function price_format($price) {
     $formated_price = ceil($price);
-    if ($formated_price >= 1000) {
-        $formated_price = number_format($formated_price, 0, ',', ' ');
-    }
-    return "$formated_price" . ' ₽';
+    $formated_price = number_format($formated_price, 0, ',', ' ');
+    return $formated_price . '<b class="rub">р</b>';
 }
 ?>
 <!DOCTYPE html>
@@ -110,9 +126,9 @@ function price_format($price) {
         <h2 class="promo__title">Нужен стафф для катки?</h2>
         <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное снаряжение.</p>
         <ul class="promo__list">
-            <?php foreach ($categories as $key => $category): ?>
-                <li class="promo__item promo__item--<?=$key; ?>">
-                    <a class="promo__link" href="pages/all-lots.html"><?=$category; ?></a>
+            <?php foreach ($categories as $category): ?>
+                <li class="promo__item promo__item--<?=$category['class']; ?>">
+                    <a class="promo__link" href="pages/all-lots.html"><?=$category['name']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -122,7 +138,7 @@ function price_format($price) {
             <h2>Открытые лоты</h2>
         </div>
         <ul class="lots__list">
-            <?php foreach ($lots as $key => $lot): ?>
+            <?php foreach ($lots as $lot): ?>
                 <li class="lots__item lot">
                     <div class="lot__image">
                         <img src="<?=$lot['img']; ?>" width="350" height="260" alt="">
@@ -150,9 +166,9 @@ function price_format($price) {
 <footer class="main-footer">
     <nav class="nav">
         <ul class="nav__list container">
-            <?php foreach ($categories as $key => $category): ?>
+            <?php foreach ($categories as $category): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?=$category; ?></a>
+                    <a href="pages/all-lots.html"><?=$category['name']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>
