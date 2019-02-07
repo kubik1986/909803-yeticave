@@ -1,6 +1,4 @@
 <?php
-date_default_timezone_set($config['timezone']);
-
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
