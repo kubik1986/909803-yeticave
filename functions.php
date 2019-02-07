@@ -35,8 +35,6 @@ function get_lot_expiry_time($expiry_date) {
     elseif ($days_to_expiry <= 3) {
         return $days_to_expiry . ($days_to_expiry > 1 ? ' дня' : ' день');
     }
-    else {
-        return date_format($expiry_date, 'd.m.Y');
-    }
+    return date_format($expiry_date, 'd.m.Y');
 }
 ?>
