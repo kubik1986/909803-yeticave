@@ -1,4 +1,11 @@
 <?php
+/**
+ * Подключает шаблон HTML-разметки в сценарий на основе переданных данных
+ *
+ * @param string $name Имя файла шаблона
+ * @param mixed[] $data Данные для вставки на место переменных в шаблоне
+ * @return string HTML-разметка блока/основного контента/лэйаута
+ */
 function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
@@ -12,12 +19,24 @@ function include_template($name, $data) {
     return $result;
 }
 
+/**
+ * Форматирует цену с разбиением разрядов пробелом и добавлением знака рубля
+ *
+ * @param int|float  $price Цена лота
+ * @return string Отформатированная строка цены
+ */
 function price_format($price) {
     $formated_price = ceil($price);
     $formated_price = number_format($formated_price, 0, ',', ' ');
     return $formated_price . '<b class="rub">р</b>';
 }
 
+/**
+ * Определяет время до окончания торгов по лоту
+ *
+ * @param string $expiry_date Дата окончания торгов в формате ДД.ММ.ГГГГ
+ * @return string Время до окончания торгов
+ */
 function get_lot_expiry_time($expiry_date) {
     $current_date = date_create('now');
     $expiry_date = date_create_from_format('d.m.Y', $expiry_date);
