@@ -21,7 +21,7 @@ CREATE TABLE users (
 
 CREATE TABLE lots (
   lot_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   img VARCHAR(255) NOT NULL,
   price INT UNSIGNED NOT NULL,
@@ -34,7 +34,7 @@ CREATE TABLE lots (
   FOREIGN KEY (category_id) REFERENCES categories (category_id),
   FOREIGN KEY (author_id) REFERENCES users (user_id),
   FOREIGN KEY (winner_id) REFERENCES users (user_id),
-  FULLTEXT INDEX name_description_ft_idx (name,description),
+  FULLTEXT INDEX title_description_ft_idx (title,description),
   INDEX winner_expiry_date_idx (winner_id,expiry_date)
 );
 
