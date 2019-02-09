@@ -30,7 +30,7 @@ CREATE TABLE lots (
   bet_step INT UNSIGNED NOT NULL,
   category_id SMALLINT UNSIGNED NOT NULL,
   author_id INT UNSIGNED NOT NULL,
-  winner_id INT UNSIGNED NOT NULL,
+  winner_id INT UNSIGNED,
   FOREIGN KEY (category_id) REFERENCES categories (category_id),
   FOREIGN KEY (author_id) REFERENCES users (user_id),
   FOREIGN KEY (winner_id) REFERENCES users (user_id),
