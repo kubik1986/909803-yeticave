@@ -1,31 +1,26 @@
-CREATE DATABASE yeticave
+CREATE DATABASE 909803_yeticave
   DEFAULT CHARACTER SET utf8
   DEFAULT COLLATE utf8_general_ci;
-USE yeticave;
+USE 909803_yeticave;
 
 CREATE TABLE categories (
-  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  name VARCHAR(255) NOT NULL,
-  class VARCHAR(100),
-  PRIMARY KEY (id),
-  UNIQUE INDEX name_uq_idx (name),
-  UNIQUE INDEX class_uq_idx (class)
+  category_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  class VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE users (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   password VARCHAR(64) NOT NULL,
-  email VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
   reg_date DATETIME NOT NULL,
   avatar VARCHAR(255),
-  contacts TEXT NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE INDEX email_uq_idx (email)
+  contacts TEXT NOT NULL
 );
 
 CREATE TABLE lots (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  lot_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   img VARCHAR(255) NOT NULL,
@@ -36,22 +31,19 @@ CREATE TABLE lots (
   category_id SMALLINT UNSIGNED NOT NULL,
   author_id INT UNSIGNED NOT NULL,
   winner_id INT UNSIGNED NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (category_id) REFERENCES categories (id),
-  FOREIGN KEY (author_id) REFERENCES users (id),
-  FOREIGN KEY (winner_id) REFERENCES users (id),
-  FULLTEXT INDEX name_ft_idx (name),
-  FULLTEXT INDEX description_ft_idx (description),
+  FOREIGN KEY (category_id) REFERENCES categories (category_id),
+  FOREIGN KEY (author_id) REFERENCES users (user_id),
+  FOREIGN KEY (winner_id) REFERENCES users (user_id),
+  FULLTEXT INDEX name_description_ft_idx (name,description),
   INDEX winner_expiry_date_idx (winner_id,expiry_date)
 );
 
 CREATE TABLE bets (
-  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  bet_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   adding_date DATETIME NOT NULL,
   amount INT NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   lot_id INT UNSIGNED NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (user_id) REFERENCES users (id),
-  FOREIGN KEY (lot_id) REFERENCES lots (id)
+  FOREIGN KEY (user_id) REFERENCES users (user_id),
+  FOREIGN KEY (lot_id) REFERENCES lots (lot_id)
 );
