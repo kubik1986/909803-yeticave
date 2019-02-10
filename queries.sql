@@ -92,16 +92,16 @@ SELECT name, class
   FROM categories;
 
 -- Получает самые новые, открытые лоты. Каждый лот включает название, стартовую цену, ссылку на изображение, цену, название категории
-SELECT title, starting_price, img, MAX(b.amount) price, c.name category
+SELECT title, starting_price, img, COALESCE(MAX(b.amount),starting_price) AS price, c.name AS category
   FROM lots l
   JOIN categories c USING (category_id)
   LEFT JOIN bets b USING (lot_id)
-  WHERE winner_ID IS NULL
+  WHERE l.expiry_date > NOW()
   GROUP BY l.lot_id
   ORDER BY l.adding_date DESC;
 
 -- Показывает лот по его id. Получает также название категории, к которой принадлежит лот
-SELECT l.*, c.name category
+SELECT l.*, c.name AS category
   FROM lots l
   JOIN categories c USING (category_id)
   WHERE lot_id = 3;
