@@ -34,15 +34,15 @@ function price_format($price) {
 /**
  * Определяет время до окончания торгов по лоту
  *
- * @param string $expiry_date Дата окончания торгов в формате ДД.ММ.ГГГГ
+ * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
  * @return string Время до окончания торгов
  */
 function get_lot_expiry_time($expiry_date) {
     $current_date = date_create('now');
-    $expiry_date = date_create_from_format('d.m.Y', $expiry_date);
+    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
     date_time_set($expiry_date, 0, 0);
     if ($current_date >= $expiry_date) {
-        return '00:00';
+        return 'Торги окончены';
     }
     $diff = date_diff($expiry_date, $current_date);
     $days_to_expiry = (int) date_interval_format($diff, '%a');
