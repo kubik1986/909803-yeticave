@@ -23,7 +23,7 @@
             <nav class="user-menu">
                 <?php if (count($user)): ?>
                     <div class="user-menu__image">
-                        <img src="<?=$user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
+                        <img src="<?=$avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
                     </div>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
