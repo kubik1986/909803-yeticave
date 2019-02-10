@@ -24,7 +24,7 @@ CREATE TABLE lots (
   title VARCHAR(255) NOT NULL,
   description TEXT NOT NULL,
   img VARCHAR(255) NOT NULL,
-  price INT UNSIGNED NOT NULL,
+  starting_price INT UNSIGNED NOT NULL,
   adding_date DATETIME NOT NULL,
   expiry_date DATE NOT NULL,
   bet_step INT UNSIGNED NOT NULL,
