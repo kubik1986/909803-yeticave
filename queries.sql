@@ -88,11 +88,11 @@ INSERT INTO bets (adding_date, amount, user_id, lot_id) VALUES
 
 
 -- Выборка всех категорий
-SELECT name, class
+SELECT *
   FROM categories;
 
 -- Получает самые новые, открытые лоты. Каждый лот включает название, стартовую цену, ссылку на изображение, цену, название категории
-SELECT title, starting_price, img, COALESCE(MAX(b.amount),starting_price) AS price, c.name AS category
+SELECT title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, c.name AS category
   FROM lots l
   JOIN categories c USING (category_id)
   LEFT JOIN bets b USING (lot_id)
