@@ -3,7 +3,7 @@
  * Подключает шаблон HTML-разметки в сценарий на основе переданных данных
  *
  * @param string $name Имя файла шаблона
- * @param mixed[] $data Данные для вставки на место переменных в шаблоне
+ * @param array $data Данные для вставки на место переменных в шаблоне
  * @return string HTML-разметка блока/основного контента/лэйаута
  */
 function include_template($name, $data) {
@@ -53,5 +53,21 @@ function get_lot_expiry_time($expiry_date) {
         return $days_to_expiry . ($days_to_expiry > 1 ? ' дня' : ' день');
     }
     return date_format($expiry_date, 'd.m.Y');
+}
+
+/**
+ * Возвращает массив данных на основе sql-запроса
+ *
+ * @param mysqli $link идентификатор подключения к серверу MySQL
+ * @param string $sql текст sql-запроса
+ * @param int $resulttype значение константы, которая указывает на тип итогового массива
+ * @return array массив данных
+ */
+function get_items($link, $sql, $resulttype = MYSQLI_ASSOC) {
+    $result = [];
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_all($query, $resulttype);
+    }
+    return $result;
 }
 ?>

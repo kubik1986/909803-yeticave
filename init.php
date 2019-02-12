@@ -21,7 +21,9 @@ $data = [
 ];
 
 // Категории
-$categories = [];
+$categories = get_items($link,
+    "SELECT *
+    FROM categories");
 
 // Пользователь
 $user = [];
