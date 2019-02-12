@@ -32,6 +32,30 @@ function price_format($price) {
 }
 
 /**
+ * Форматирует количество ставок по лоту путем добавления наименования
+ *
+ * @param int $bets_count количество ставок
+ * @return string Отформатированная строка количества ставок
+ */
+function bets_count_format($bets_count) {
+    $end = '';
+    $count = $bets_count % 100;
+    if ($count > 19) {
+        $count = $count % 10;
+    }
+    if ($count === 1) {
+        $end = 'ка';
+    }
+    else if ($count >= 2 && $count <= 4) {
+        $end = 'ки';
+    }
+    else {
+        $end = 'ок';
+    }
+    return $bets_count . ' став' . $end;
+}
+
+/**
  * Определяет время до окончания торгов по лоту
  *
  * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД

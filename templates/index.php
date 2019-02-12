@@ -24,8 +24,13 @@
                     <h3 class="lot__title"><a class="text-link" href="pages/lot.html"><?=htmlspecialchars($lot['title']); ?></a></h3>
                     <div class="lot__state">
                         <div class="lot__rate">
-                            <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=price_format($lot['starting_price']); ?></span>
+                            <?php if(intval($lot['bets_count']) === 0): ?>
+                                <span class="lot__amount">Стартовая цена</span>
+                                <span class="lot__cost"><?=price_format($lot['starting_price']); ?></span>
+                            <?php else: ?>
+                                <span class="lot__amount"><?=bets_count_format($lot['bets_count']); ?></span>
+                                <span class="lot__cost"><?=price_format($lot['price']); ?></span>
+                            <?php endif; ?>
                         </div>
                         <?php if (strpos(get_lot_expiry_time($lot['expiry_date']), ':')): ?>
                         <div class="lot__timer timer timer--finishing">
