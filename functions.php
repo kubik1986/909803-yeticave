@@ -45,7 +45,7 @@ function get_lot_expiry_time($expiry_date) {
         return 'Торги окончены';
     }
     $diff = date_diff($expiry_date, $current_date);
-    $days_to_expiry = (int) date_interval_format($diff, '%a');
+    $days_to_expiry = intval(date_interval_format($diff, '%a'));
     if ($days_to_expiry === 0) {
         return date_interval_format($diff, '%H:%I');
     }
@@ -53,21 +53,5 @@ function get_lot_expiry_time($expiry_date) {
         return $days_to_expiry . ($days_to_expiry > 1 ? ' дня' : ' день');
     }
     return date_format($expiry_date, 'd.m.Y');
-}
-
-/**
- * Возвращает массив данных на основе sql-запроса
- *
- * @param mysqli $link идентификатор подключения к серверу MySQL
- * @param string $sql текст sql-запроса
- * @param int $resulttype значение константы, которая указывает на тип итогового массива
- * @return array массив данных
- */
-function get_items($link, $sql, $resulttype = MYSQLI_ASSOC) {
-    $result = [];
-    if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_all($query, $resulttype);
-    }
-    return $result;
 }
 ?>
