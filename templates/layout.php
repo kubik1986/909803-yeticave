@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title><?=$title; ?></title>
-    <link href="css/normalize.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="/css/normalize.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
 </head>
 <body>
 <div class="page-wrapper">
     <header class="main-header">
         <div class="main-header__container container">
             <h1 class="visually-hidden">YetiCave</h1>
+            <?php if($is_main_page): ?>
             <a class="main-header__logo">
-                <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
+            <?php else: ?>
+            <a class="main-header__logo" href="/">
+            <?php endif; ?>
+                <img src="/img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
-            <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru">
+            <form class="main-header__search" method="get" action="/search.php">
                 <input type="search" name="search" placeholder="Поиск лота">
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
@@ -23,7 +27,7 @@
             <nav class="user-menu">
                 <?php if (count($user)): ?>
                     <div class="user-menu__image">
-                        <img src="<?=$avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
+                        <img src="<?='/' . $avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
                     </div>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
@@ -43,7 +47,28 @@
         </div>
     </header>
 
+    <?php if($is_main_page): ?>
     <main class="container"><?=$content; ?></main>
+    <?php else: ?>
+    <main>
+        <nav class="nav">
+            <ul class="nav__list container">
+                <?php foreach ($categories as $category): ?>
+                    <?php if($category_id && intval($category['category_id']) === $category_id): ?>
+                    <li class="nav__item nav__item--current">
+                    <?php else: ?>
+                    <li class="nav__item">
+                    <?php endif; ?>
+                        <a href="/all-lots.php/?category=<?=$category['category_id']; ?>"><?=$category['name']; ?></a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </nav>
+        <div class="container">
+            <?=$content; ?>
+        </div>
+    </main>
+  <?php endif; ?>
 </div>
 
 <footer class="main-footer">
@@ -51,7 +76,7 @@
         <ul class="nav__list container">
             <?php foreach ($categories as $category): ?>
                 <li class="nav__item">
-                    <a href="/?category=<?=$category['category_id']; ?>"><?=$category['name']; ?></a>
+                    <a href="/all-lots.php/?category=<?=$category['category_id']; ?>"><?=$category['name']; ?></a>
                 </li>
             <?php endforeach; ?>
         </ul>

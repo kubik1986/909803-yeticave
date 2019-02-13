@@ -18,6 +18,9 @@ $data = [
     'lot_img_path' => $config['lot_img_path']
 ];
 
+// Флаг нахождения на главной странице
+$is_main_page = ($_SERVER['REQUEST_URI'] === '/');
+
 // Категории
 $categories = db_get_categories($link);
 
