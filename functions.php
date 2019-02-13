@@ -3,7 +3,7 @@
  * Подключает шаблон HTML-разметки в сценарий на основе переданных данных
  *
  * @param string $name Имя файла шаблона
- * @param mixed[] $data Данные для вставки на место переменных в шаблоне
+ * @param array $data Данные для вставки на место переменных в шаблоне
  * @return string HTML-разметка блока/основного контента/лэйаута
  */
 function include_template($name, $data) {
@@ -32,6 +32,30 @@ function price_format($price) {
 }
 
 /**
+ * Форматирует количество ставок по лоту путем добавления наименования
+ *
+ * @param int $bets_count количество ставок
+ * @return string Отформатированная строка количества ставок
+ */
+function bets_count_format($bets_count) {
+    $end = '';
+    $count = $bets_count % 100;
+    if ($count > 19) {
+        $count = $count % 10;
+    }
+    if ($count === 1) {
+        $end = 'ка';
+    }
+    else if ($count >= 2 && $count <= 4) {
+        $end = 'ки';
+    }
+    else {
+        $end = 'ок';
+    }
+    return $bets_count . ' став' . $end;
+}
+
+/**
  * Определяет время до окончания торгов по лоту
  *
  * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
@@ -45,7 +69,7 @@ function get_lot_expiry_time($expiry_date) {
         return 'Торги окончены';
     }
     $diff = date_diff($expiry_date, $current_date);
-    $days_to_expiry = (int) date_interval_format($diff, '%a');
+    $days_to_expiry = intval(date_interval_format($diff, '%a'));
     if ($days_to_expiry === 0) {
         return date_interval_format($diff, '%H:%I');
     }

@@ -1,6 +1,6 @@
 # Личный проект «YetiCave»
 
-* Студент: [Вячесла  Акулов](https://up.htmlacademy.ru/php/8/user/909803).
+* Студент: [Вячеслав Акулов](https://up.htmlacademy.ru/php/8/user/909803).
 * Наставник: [Алексей Стулов](https://up.htmlacademy.ru/php/8/user/25231).
 
 ---
