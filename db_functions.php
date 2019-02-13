@@ -31,16 +31,17 @@ function db_get_categories($link) {
 }
 
 /**
- * Возвращает массив открытых лотов
+ * Возвращает массив открытых лотов или количество открытых лотов
  *
  * @param mysqli $link идентификатор подключения к серверу MySQL
  * @param int $limit количество лотов, отображаемое на странице
  * @param int $category_id ID категории лота
  * @param int $page_id ID страницы при постраничной навигации
- * @return array массив открытых лотов
+ * @return array|int массив открытых лотов|количество открытых лотов
  */
-function db_get_opened_lots($link, $limit, $category_id, $page_id) {
-    $result = [];
+function db_get_opened_lots($link, $limit, $category_id = false, $page_id = false, $records_count = false) {
+    $result_array = [];
+    $result_count = 0;
     $category_filter = '';
     if (!empty($category_id)) {
         $category_filter = 'AND c.category_id = ' . $category_id;
@@ -60,8 +61,13 @@ function db_get_opened_lots($link, $limit, $category_id, $page_id) {
             LIMIT $limit
             $offset_filter";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+        if ($records_count) {
+            $result_count = mysqli_num_rows($query);
+        }
+        else {
+            $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
+        }
     }
-    return $result;
+    return $records_count ? $result_count : $result_array;
 }
 ?>

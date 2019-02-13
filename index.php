@@ -7,11 +7,8 @@ $lots_limit = 9;
 // ID категории лота
 $category_id = false;
 
-// ID страницы при постраничной навигации
-$page_id = false;
-
 // Открытые лоты
-$lots = db_get_opened_lots($link, $lots_limit, $category_id, $page_id);
+$lots = db_get_opened_lots($link, $lots_limit);
 
 $lots_list = include_template('_lots-list.php', array_merge($data, [
     'lots' => $lots
