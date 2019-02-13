@@ -50,7 +50,7 @@ function db_get_opened_lots($link, $limit, $category_id, $page_id) {
         $offset_filter = 'OFFSET ' . ($page_id - 1) * $limit;
     }
     $sql =
-        "SELECT title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
+        "SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
             FROM lots l
             JOIN categories c USING (category_id)
             LEFT JOIN bets b USING (lot_id)
