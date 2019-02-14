@@ -37,22 +37,18 @@ function db_get_categories($link) {
  * Возвращает массив открытых лотов или количество открытых лотов
  *
  * @param mysqli $link идентификатор подключения к серверу MySQL
- * @param int $limit количество лотов, отображаемое на странице
- * @param int $category_id ID категории лота
- * @param int $page_id ID страницы при постраничной навигации
+ * @param int|bool $limit количество лотов, отображаемое на странице
+ * @param int|bool $category_id ID категории лота
+ * @param int|bool $page_id ID страницы при постраничной навигации
+ * @param bool $records_count параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
  * @return array|int массив открытых лотов|количество открытых лотов
  */
 function db_get_opened_lots($link, $limit, $category_id = false, $page_id = false, $records_count = false) {
     $result_array = [];
     $result_count = 0;
-    $category_filter = '';
-    if (!empty($category_id)) {
-        $category_filter = 'AND c.category_id = ' . $category_id;
-    }
-    $offset_filter ='';
-    if (!empty($page_id)) {
-        $offset_filter = 'OFFSET ' . ($page_id - 1) * $limit;
-    }
+    $category_filter = !empty($category_id) ? 'AND c.category_id = ' . $category_id : '';
+    $limit_filter = !empty($limit) ? 'LIMIT ' . $limit : '';
+    $offset_filter = !empty($page_id) && !empty($limit) ? 'OFFSET ' . ($page_id - 1) * $limit : '';
     $sql =
         "SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
             FROM lots l
@@ -61,7 +57,7 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
             WHERE l.expiry_date > NOW() $category_filter
             GROUP BY l.lot_id
             ORDER BY l.adding_date DESC
-            LIMIT $limit
+            $limit_filter
             $offset_filter";
     if ($query = mysqli_query($link, $sql)) {
         if ($records_count) {

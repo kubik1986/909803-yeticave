@@ -5,19 +5,13 @@ require_once('init.php');
 $lots_limit = 9;
 
 // ID категории лота
-$category_id = false;
-if (isset($_GET['category'])) {
-    $category_id = intval($_GET['category']);
-    if ($category_id <= 0) {
-        $category_id = 1;
-    }
-    elseif ($category_id > count($categories)) {
-        $category_id = count($categories);
-    }
+$category_id = isset($_GET['category']) ? intval($_GET['category']) : false;
+if ($category_id <= 0 || $category_id > count($categories)) {
+    $category_id = 1;
 }
 
 // Количество открытых лотов в указанной категории
-$lots_count = db_get_opened_lots($link, $lots_limit, $category_id, false, true);
+$lots_count = db_get_opened_lots($link, false, $category_id, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = floor($lots_count / $lots_limit);
@@ -26,15 +20,9 @@ if ($lots_count % $lots_limit !== 0) {
 }
 
 // ID страницы при постраничной навигации
-$page_id = 1;
-if (isset($_GET['page'])) {
-    $page_id = intval($_GET['page']);
-    if ($page_id <= 0) {
-        $page_id = 1;
-    }
-    elseif ($page_id > $pages_count) {
-        $page_id = $pages_count;
-    }
+$page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page_id <= 0  || $page_id > $pages_count) {
+    $page_id = 1;
 }
 
 // Данные для блока пагинации
