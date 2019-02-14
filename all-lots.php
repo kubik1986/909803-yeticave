@@ -26,7 +26,7 @@ if ($page_id <= 0  || $page_id > $pages_count) {
 }
 
 // Данные для блока пагинации
-$pagination_data = get_pagination_data($pages_count, $page_id, $_GET, 11);
+$pagination_data = get_pagination_data($pages_count, $page_id, ['category' =>  $category_id], 10);
 
 // Лоты в указанной категории и странице
 $lots = db_get_opened_lots($link, $lots_limit, $category_id, $page_id);
