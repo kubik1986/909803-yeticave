@@ -27,6 +27,9 @@ function db_get_categories($link) {
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
     }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
     return $result;
 }
 
@@ -67,6 +70,9 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
         else {
             $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
         }
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $records_count ? $result_count : $result_array;
 }
