@@ -78,4 +78,96 @@ function get_lot_expiry_time($expiry_date) {
     }
     return date_format($expiry_date, 'd.m.Y');
 }
+
+function add_pagination_item(&$pagination_data, &$url_data, $index, $page_number, $current_page) {
+    $page_href = '';  // строка href для ссылки
+    $class = ' pagination-item-active';  // css-класс элемента списка
+    if ($page_number !== $current_page) {
+        $url_data['page'] = $page_number;
+        $page_href = ' href="?' . http_build_query($url_data) . '"';
+        $class = '';
+    }
+    $pagination_data[$index] = [
+        'page_number' => $page_number,
+        'class' => $class,
+        'href' => $page_href
+    ];
+}
+
+function get_pagination_data($pages_count, $current_page, $url_data, $max_items = 9) {
+    if ($pages_count <= 1) {
+        return [];
+    }
+    $pagination_data = [];
+    $prev_href ='';  // строка href для ссылки "назад"
+    $next_href ='';  // строка href для ссылки "вперед"
+    if ($current_page > 1) {
+        $url_data['page'] = $current_page - 1;
+        $prev_href = ' href="?' . http_build_query($url_data) . '"';
+    }
+    if ($current_page < $pages_count) {
+        $url_data['page'] = $current_page + 1;
+        $next_href = ' href="?' . http_build_query($url_data) . '"';
+    }
+    $pagination_data[0] = ['page_number' => 'Назад', 'class' => ' pagination-item-prev', 'href' => $prev_href];
+
+    if ($pages_count <= $max_items) {
+        $i = 1;
+        while ($i <= $pages_count) {
+            $page_number = $i;  // текст ссылки на страницу (номер страницы)
+            add_pagination_item($pagination_data, $url_data, $i, $page_number, $current_page);
+            $i++;
+        }
+    }
+    else {
+        $left = $current_page - 1;  // количество страниц слева от текущей
+        $right = $pages_count - $current_page;  // количество страниц справа от текущей
+        $mid_pos = (int) ceil($max_items / 2);  // позиция центрального элемента списка
+        add_pagination_item($pagination_data, $url_data, 1, 1, $current_page);
+
+        if ($left > $mid_pos - 1 && $right > $mid_pos - 1) {
+            $i = 2;
+            while ($i <= $max_items - 1) {
+                if ($i === 2 || $i === $max_items - 1) {
+                    $pagination_data[$i] = ['page_number' => '...', 'class' => '', 'href' => ''];
+                }
+                else {
+                    $page_number = $i + $current_page - $mid_pos;
+                    add_pagination_item($pagination_data, $url_data, $i, $page_number, $current_page);
+                }
+                $i++;
+            }
+        }
+        elseif ($left <= ($mid_pos - 1)) {
+            $i = 2;
+            while ($i <= $max_items - 1) {
+                if ($i === $max_items - 1) {
+                    $pagination_data[$i] = ['page_number' => '...', 'class' => '', 'href' => ''];
+                }
+                else {
+                    $page_number = $i;
+                    add_pagination_item($pagination_data, $url_data, $i, $page_number, $current_page);
+                }
+                $i++;
+            }
+        }
+        else {
+            $i = 2;
+            while ($i <= $max_items - 1) {
+                if ($i === 2) {
+                    $pagination_data[$i] = ['page_number' => '...', 'class' => '', 'href' => ''];
+                }
+                else {
+                    $page_number = $i + $pages_count - $max_items;
+                    add_pagination_item($pagination_data, $url_data, $i, $page_number, $current_page);
+                }
+                $i++;
+            }
+        }
+        add_pagination_item($pagination_data, $url_data, $max_items, $pages_count, $current_page);
+    }
+
+    $pagination_data[$max_items + 1] = ['page_number' => 'Вперед', 'class' => ' pagination-item-next', 'href' => $next_href];
+    return $pagination_data;
+}
 ?>

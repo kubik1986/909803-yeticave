@@ -37,6 +37,9 @@ if (isset($_GET['page'])) {
     }
 }
 
+// Данные для блока пагинации
+$pagination_data = get_pagination_data($pages_count, $page_id, $_GET, 11);
+
 // Лоты в указанной категории и странице
 $lots = db_get_opened_lots($link, $lots_limit, $category_id, $page_id);
 
@@ -46,7 +49,8 @@ $lots_list = include_template('_lots-list.php', array_merge($data, [
 $page_content = include_template('all-lots.php', array_merge($data, [
     'categories' => $categories,
     'category_id' => $category_id,
-    'lots_list' => $lots_list
+    'lots_list' => $lots_list,
+    'pagination_data' => $pagination_data
 ]));
 $layout_content = include_template('layout.php', array_merge($data, [
     'title' => 'Все лоты в категории «' . $categories[$category_id - 1]['name'] . '»',

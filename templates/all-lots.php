@@ -4,3 +4,6 @@
     </div>
     <?=$lots_list; ?>
 </section>
+<?php if ($pagination_data): ?>
+<?=include_template('_pagination.php', ['pagination_data' => $pagination_data]); ?>
+<?php endif; ?>
