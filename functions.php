@@ -22,13 +22,14 @@ function include_template($name, $data) {
 /**
  * Форматирует цену с разбиением разрядов пробелом и добавлением знака рубля
  *
- * @param int|float  $price Цена лота
+ * @param int|float $price Цена лота
+ * @param bool $ruble_sign параметр, определяющий добавление знака рубля (true - знак рубля добавляется, false - выводится только числовое значение)
  * @return string Отформатированная строка цены
  */
-function price_format($price) {
+function price_format($price, $ruble_sign = true) {
     $formated_price = ceil($price);
     $formated_price = number_format($formated_price, 0, ',', ' ');
-    return $formated_price . '<b class="rub">р</b>';
+    return $ruble_sign ? $formated_price . '<b class="rub">р</b>' : $formated_price;
 }
 
 /**
