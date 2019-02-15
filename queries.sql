@@ -84,7 +84,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
 INSERT INTO bets (adding_date, amount, user_id, lot_id) VALUES
   ('2019-02-08 10:12:32', 8750, 3, 3),
   ('2019-02-09 22:41:15', 11499, 2, 1),
-  ('2019-02-09 23:01:44', 9500, 1, 3);
+  ('2019-02-09 23:01:44', 9500, 2, 3);
 
 
 -- Выборка всех категорий
