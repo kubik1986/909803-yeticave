@@ -81,6 +81,25 @@ function get_lot_expiry_time($expiry_date) {
 }
 
 /**
+ * Определяет, заканчивается ли время торгов по указанному лоту
+ *
+ * @param string $expiry_date Дата окончания торгов по лоту в формате ГГГГ-ММ-ДД
+ * @param int $min_hours количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
+ * @return bool true - аукцион заканчивается, false - аукцион не заканчивается
+ */
+function is_lot_finishing($expiry_date, $min_hours = 6) {
+    $current_date = date_create('now');
+    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
+    date_time_set($expiry_date, 0, 0);
+    $diff = date_diff($expiry_date, $current_date);
+    $days_to_expiry = intval(date_interval_format($diff, '%a'));
+    if ($days_to_expiry > 0) {
+        return false;
+    }
+    return intval(date_interval_format($diff, '%h')) < $min_hours;
+}
+
+/**
  * Возвращает массив данных для блока пагинации
  *
  * @param int $pages_count общее количество страниц

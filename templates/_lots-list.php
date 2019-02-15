@@ -20,7 +20,7 @@
                     <span class="lot__cost"><?=price_format($lot['price']); ?></span>
                     <?php endif; ?>
                 </div>
-                <?php if (strpos(get_lot_expiry_time($lot['expiry_date']), ':')): ?>
+                <?php if (is_lot_finishing($lot['expiry_date'])): ?>
                 <div class="lot__timer timer timer--finishing">
                 <?php else: ?>
                 <div class="lot__timer timer">
