@@ -100,8 +100,8 @@ SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALES
   GROUP BY l.lot_id
   ORDER BY l.adding_date DESC;
 
--- Показывает лот по его id. Получает также название категории, к которой принадлежит лот, количество ставок и текущую цену
-SELECT l.*, c.name AS category, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price
+-- Показывает лот по его id. Получает также название категории, к которой принадлежит лот, и текущую цену
+SELECT l.*, c.name AS category, COALESCE(MAX(b.amount),starting_price) AS price
   FROM lots l
   JOIN categories c USING (category_id)
   JOIN bets b USING (lot_id)
