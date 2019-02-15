@@ -33,27 +33,37 @@ function price_format($price, $ruble_sign = true) {
 }
 
 /**
- * Форматирует количество ставок по лоту путем добавления наименования
+ * Форматирует числовое значение путем добавления наименования в правильном падеже
  *
- * @param int $bets_count количество ставок
- * @return string Отформатированная строка количества ставок
+ * @param int $num число
+ * @param string $word наименование (существительное) для склонения из предопределенного массива
+ * @return string наименование в правильном падеже
  */
-function bets_count_format($bets_count) {
-    $end = '';
-    $count = $bets_count % 100;
+function num_format($num, $word) {
+    $words = [
+        'ставка' => ['ставка', 'ставки', 'ставок'],
+        'минута' => ['минута', 'минуты', 'минут'],
+        'час' => ['час', 'часа', 'часов'],
+        'рубль' => ['рубль', 'рубля', 'рублей']
+    ];
+    $result = '';
+    if (!isset($words[$word])) {
+        return result;
+    }
+    $count = $num % 100;
     if ($count > 19) {
         $count = $count % 10;
     }
     if ($count === 1) {
-        $end = 'ка';
+        $result = $words[$word][0];
     }
     else if ($count >= 2 && $count <= 4) {
-        $end = 'ки';
+        $result = $words[$word][1];
     }
     else {
-        $end = 'ок';
+        $result = $words[$word][2];
     }
-    return $bets_count . ' став' . $end;
+    return $result;
 }
 
 /**
