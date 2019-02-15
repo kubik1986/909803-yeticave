@@ -4,9 +4,6 @@ require_once('init.php');
 // Количество лотов, выводимых на страницу
 $lots_limit = 9;
 
-// ID категории лота
-$category_id = false;
-
 // Открытые лоты
 $lots = db_get_opened_lots($link, $lots_limit);
 

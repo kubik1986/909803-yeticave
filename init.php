@@ -24,6 +24,9 @@ $is_main_page = ($_SERVER['REQUEST_URI'] === '/');
 // Категории
 $categories = db_get_categories($link);
 
+// ID категории лота
+$category_id = false;
+
 // Пользователь
 $user = [];
 ?>
