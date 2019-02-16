@@ -165,22 +165,22 @@ function get_bet_add_time($adding_time) {
  * @param int $pages_count Общее количество страниц
  * @param int $current_page Номер текущей страницы
  * @param array $url_data Массив исходных get-параметров страницы
- * @param int $max_items Максимальное количество страниц, отображаемое в списке
+ * @param int $max_pages Максимальное количество страниц, отображаемое в списке
  * @return array Двумерный массив данных, каждый элемент которого содержит номер страницы, css-класс элемента списка и текст атрибута href
  */
-function get_pagination_data($pages_count, $current_page, $url_data, $max_items = 9) {
+function get_pagination_data($pages_count, $current_page, $url_data, $max_pages = 9) {
     if ($pages_count <= 1) {
         return [];
     }
-    $max_items = $pages_count < $max_items ? $pages_count : $max_items;
+    $max_pages = $pages_count < $max_pages ? $pages_count : $max_pages;
     $pagination_data = [];
     $prev_href ='';  // строка href для ссылки "назад"
     $next_href ='';  // строка href для ссылки "вперед"
     $left = $current_page - 1;  // количество страниц слева от текущей
     $right = $pages_count - $current_page;  // количество страниц справа от текущей
-    $mid_pos = (int) ceil($max_items / 2);  // позиция центрального элемента списка
+    $mid_pos = (int) ceil($max_pages / 2);  // позиция центрального элемента списка
     $left_min = $mid_pos - 1; // количество элементов слева от центрального
-    $right_min = $max_items - $mid_pos; // количество элементов справа от центрального
+    $right_min = $max_pages - $mid_pos; // количество элементов справа от центрального
     if ($current_page > 1) {
         $url_data['page'] = $current_page - 1;
         $prev_href = ' href="?' . http_build_query($url_data) . '"';
@@ -191,13 +191,13 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_items 
     }
     $pagination_data[0] = ['page_number' => 'Назад', 'class' => ' pagination-item-prev', 'href' => $prev_href];
     $i = 1;
-    while ($i <= $max_items) {
+    while ($i <= $max_pages) {
         $page_number = $i; // текущая страница в начале списка
         if ($left > $left_min && $right > $right_min) { // текущая страница где-то в середине списка
             $page_number = $i + $current_page - $mid_pos;
         }
         elseif ($right <= $right_min) { // текущая страница в конце списка
-            $page_number = $i + $pages_count - $max_items;
+            $page_number = $i + $pages_count - $max_pages;
         }
         $page_href = '';
         $class = ' pagination-item-active';
@@ -213,7 +213,7 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_items 
         ];
         $i++;
     }
-    $pagination_data[$max_items + 1] = ['page_number' => 'Вперед', 'class' => ' pagination-item-next', 'href' => $next_href];
+    $pagination_data[$max_pages + 1] = ['page_number' => 'Вперед', 'class' => ' pagination-item-next', 'href' => $next_href];
     return $pagination_data;
 }
 ?>
