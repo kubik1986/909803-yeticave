@@ -28,5 +28,9 @@ $categories = db_get_categories($link);
 $category_id = false;
 
 // Пользователь
-$user = [];
+$user = [
+    'user_id' => 3,
+    'name' => 'Василий',
+    'avatar' => 'user.jpg'
+];
 ?>
