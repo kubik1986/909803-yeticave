@@ -82,7 +82,6 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param int $lot_id ID лота
- *
  * @return array Массив данных указанного лота
  */
 function db_get_lot($link, $lot_id) {
@@ -106,7 +105,6 @@ function db_get_lot($link, $lot_id) {
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param int $lot_id ID лота
- *
  * @return array Массив ставок для указанного лота
  */
 function db_get_bets($link, $lot_id) {
