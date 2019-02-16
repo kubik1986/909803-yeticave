@@ -48,7 +48,7 @@ function num_format($num, $word) {
     ];
     $result = '';
     if (!isset($words[$word])) {
-        return result;
+        return $result;
     }
     $count = $num % 100;
     if ($count > 19) {
