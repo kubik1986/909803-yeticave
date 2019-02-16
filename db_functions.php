@@ -7,7 +7,11 @@
  */
 function db_connect($db) {
     $link = mysqli_connect($db['host'], $db['user'], $db['password'], $db['database']);
-    if (!$link) {
+    if ($link) {
+        $sql = "SET time_zone = '" . $db['timezone'] . "'";
+        $set_time_zone = mysqli_query($link, $sql);
+    }
+    if (!$link || !$set_time_zone) {
         exit('Извините, на сайте ведутся технические работы');
     }
     return $link;
@@ -71,5 +75,7 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $records_count ? $result_count : $result_array;
+}
+    return $result;
 }
 ?>
