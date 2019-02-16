@@ -35,9 +35,9 @@ function price_format($price, $ruble_sign = true) {
 /**
  * Форматирует числовое значение путем добавления наименования в правильном падеже
  *
- * @param int $num число
- * @param string $word наименование (существительное) для склонения из предопределенного массива
- * @return string наименование в правильном падеже
+ * @param int $num Число
+ * @param string $word Наименование (существительное) для склонения из предопределенного массива
+ * @return string Наименование в правильном падеже
  */
 function num_format($num, $word) {
     $words = [
@@ -94,7 +94,7 @@ function get_lot_expiry_time($expiry_date) {
  * Определяет, заканчивается ли время торгов по указанному лоту
  *
  * @param string $expiry_date Дата окончания торгов по лоту в формате ГГГГ-ММ-ДД
- * @param int $min_hours количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
+ * @param int $min_hours Количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
  * @return bool true - аукцион заканчивается, false - аукцион не заканчивается
  */
 function is_lot_finishing($expiry_date, $min_hours = 6) {
@@ -110,13 +110,49 @@ function is_lot_finishing($expiry_date, $min_hours = 6) {
 }
 
 /**
+ * Возвращает время, прошедшее с момента добавления ставки, или непосредственно время добавления ставки в удобочитаемом формате
+ *
+ * @param string $adding_date Время добавления ставки в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС
+ * @return string Отформатированное время добавления ставки
+ */
+function get_bet_add_time($adding_time) {
+    $current_date = date_create('now');
+    $adding_date = date_create($adding_time);
+    $diff = date_diff($current_date, $adding_date);
+    $days_passed = intval(date_interval_format($diff, '%a'));
+    if ($days_passed === 0) {
+        $hours_passed = intval(date_interval_format($diff, '%h'));
+        if ($hours_passed === 0) {
+            $minutes_passed = intval(date_interval_format($diff, '%i'));
+            if ($minutes_passed === 0) {
+                $seconds_passed = intval(date_interval_format($diff, '%s'));
+                return $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
+            }
+            return $minutes_passed === 1 ? 'Минута назад' : $minutes_passed . ' ' . num_format($minutes_passed, 'минута') . ' назад';
+        }
+        elseif ($hours_passed > 0 && $hours_passed <= 5) {
+            return $hours_passed ===1 ? 'Час назад' : $hours_passed . ' ' . num_format($hours_passed, 'час') . ' назад';
+        }
+    }
+    $current_date_midnight = date_create('today');
+    $adding_date_midnight = date_create($adding_time);
+    date_time_set($adding_date_midnight, 0, 0);
+    $calendar_diff = date_diff($current_date_midnight, $adding_date_midnight);
+    $calendar_days_passed = intval(date_interval_format($calendar_diff, '%a'));
+    if ($calendar_days_passed <= 1) {
+        return  $calendar_days_passed === 0 ? date_format($adding_date, 'Сегодня в H:i') : date_format($adding_date, 'Вчера в H:i');
+    }
+    return date_format($adding_date, 'd.m.y в H:i');
+}
+
+/**
  * Возвращает массив данных для блока пагинации
  *
- * @param int $pages_count общее количество страниц
- * @param int $current_page номер текущей страницы
- * @param array $url_data массив исходных get-параметров страницы
- * @param int $max_items максимальное количество страниц, отображаемое в списке
- * @return array двумерный массив данных, каждый элемент которого содержит номер страницы, css-класс элемента списка и текст атрибута href
+ * @param int $pages_count Общее количество страниц
+ * @param int $current_page Номер текущей страницы
+ * @param array $url_data Массив исходных get-параметров страницы
+ * @param int $max_items Максимальное количество страниц, отображаемое в списке
+ * @return array Двумерный массив данных, каждый элемент которого содержит номер страницы, css-класс элемента списка и текст атрибута href
  */
 function get_pagination_data($pages_count, $current_page, $url_data, $max_items = 9) {
     if ($pages_count <= 1) {
