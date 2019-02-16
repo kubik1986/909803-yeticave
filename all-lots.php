@@ -9,6 +9,7 @@ $category_id = isset($_GET['category']) ? intval($_GET['category']) : false;
 if ($category_id <= 0 || $category_id > count($categories)) {
     $category_id = 1;
 }
+$data['category_id'] = $category_id;
 
 // Количество открытых лотов в указанной категории
 $lots_count = db_get_opened_lots($link, false, $category_id, false, true);
@@ -44,9 +45,7 @@ $layout_content = include_template('layout.php', array_merge($data, [
     'title' => 'Все лоты в категории «' . $categories[$category_id - 1]['name'] . '»',
     'content' => $page_content,
     'user' => $user,
-    'categories' => $categories,
-    'is_main_page' => $is_main_page,
-    'category_id' => $category_id
+    'categories' => $categories
 ]));
 print($layout_content);
 ?>

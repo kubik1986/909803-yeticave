@@ -15,17 +15,13 @@ date_default_timezone_set($config['timezone']);
 $data = [
     'title' => $config['sitename'] . ' - интернет-аукцион сноубордического и горнолыжного снаряжения',
     'avatar_path' => $config['avatar_path'],
-    'lot_img_path' => $config['lot_img_path']
+    'lot_img_path' => $config['lot_img_path'],
+    'is_main_page' => false,
+    'category_id' => false
 ];
-
-// Флаг нахождения на главной странице
-$is_main_page = $_SERVER['REQUEST_URI'] === '/' || stripos($_SERVER['REQUEST_URI'], 'index.php');
 
 // Категории
 $categories = db_get_categories($link);
-
-// ID категории лота
-$category_id = false;
 
 // Пользователь
 $user = [

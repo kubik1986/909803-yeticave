@@ -31,12 +31,10 @@ $page_content = include_template('lot.php', array_merge($data, [
     'user' => $user
 ]));
 $layout_content = include_template('layout.php', array_merge($data, [
-    'title' => htmlspecialchars($lot['title']),
+    'title' => $lot['title'],
     'content' => $page_content,
     'user' => $user,
-    'categories' => $categories,
-    'is_main_page' => $is_main_page,
-    'category_id' => $category_id
+    'categories' => $categories
 ]));
 print($layout_content);
 ?>

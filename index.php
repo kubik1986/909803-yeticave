@@ -1,6 +1,8 @@
 <?php
 require_once('init.php');
 
+$data['is_main_page'] = true;
+
 // Количество лотов, выводимых на страницу
 $lots_limit = 9;
 
@@ -17,9 +19,7 @@ $page_content = include_template('index.php', array_merge($data, [
 $layout_content = include_template('layout.php', array_merge($data, [
     'content' => $page_content,
     'user' => $user,
-    'categories' => $categories,
-    'is_main_page' => $is_main_page,
-    'category_id' => $category_id
+    'categories' => $categories
 ]));
 print($layout_content);
 ?>
