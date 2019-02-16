@@ -26,7 +26,7 @@
                         Мин. ставка <span><?=price_format(intval($lot['price']) + intval($lot['bet_step']), false); ?> р</span>
                     </div>
                 </div>
-                <?php if (get_lot_expiry_time($lot['expiry_date']) !== 'Торги окончены' &&
+                <?php if (!is_lot_closed($lot['expiry_date']) &&
                     $user &&
                     intval($user['user_id']) !== intval($lot['author_id']) &&
                     (!$bets || intval($bets[0]['user_id']) !== intval($user['user_id']))): ?>

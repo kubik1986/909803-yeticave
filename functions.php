@@ -67,6 +67,19 @@ function num_format($num, $word) {
 }
 
 /**
+ * Определяет, закончился ли аукцион по лоту
+ *
+ * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
+ * @return bool true - аукцион закончился, false - аукцион не закончился
+ */
+function is_lot_closed($expiry_date) {
+    $current_date = date_create('now');
+    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
+    date_time_set($expiry_date, 0, 0);
+    return $current_date >= $expiry_date;
+}
+
+/**
  * Определяет время до окончания торгов по лоту
  *
  * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
