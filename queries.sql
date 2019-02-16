@@ -32,7 +32,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'lot-1.jpg',
     10999,
     '2019-02-03 19:50:28',
-    '2019-02-14',
+    '2019-02-16',
     500,
     1,
     1),
@@ -41,7 +41,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'lot-2.jpg',
     159999,
     '2019-02-04 14:17:01',
-    '2019-02-15',
+    '2019-02-17',
     1000,
     1,
     3),
@@ -50,7 +50,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'lot-3.jpg',
     8000,
     '2019-02-05 22:44:55',
-    '2019-02-16',
+    '2019-02-18',
     750,
     2,
     1),
@@ -59,7 +59,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'lot-4.jpg',
     10999,
     '2019-02-06 17:08:43',
-    '2019-02-17',
+    '2019-02-19',
     777,
     3,
     2),
@@ -68,7 +68,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'lot-5.jpg',
     7500,
     '2019-02-07 09:34:27',
-    '2019-02-18',
+    '2019-02-20',
     500,
     4,
     3),
@@ -76,7 +76,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
     'Маска с очень большой линзой, которая обеспечивает лучший обзор среди всех масок в линейке. Картинка будет четкой, контрастной и глубокой благодаря технологии XYZ OPTICS, которая позволяет соблюдать оптическую корректность по вертикали, горизонтали и в глубину. Двойная конструкция линзы и покрытие анти-фог препятствуют запотеванию. Фирменная система крепления стрепа обеспечивает равномерное распределение давления маски на лицо - маска удобно сидит на лице и не создает избыточного давления на носовую область.',
     'lot-6.jpg', 5400,
     '2019-02-08 13:21:15',
-    '2019-02-19',
+    '2019-02-21',
     200,
     6,
     1);
@@ -84,7 +84,7 @@ INSERT INTO lots (title, description, img, starting_price, adding_date, expiry_d
 INSERT INTO bets (adding_date, amount, user_id, lot_id) VALUES
   ('2019-02-08 10:12:32', 8750, 3, 3),
   ('2019-02-09 22:41:15', 11499, 2, 1),
-  ('2019-02-09 23:01:44', 9500, 1, 3);
+  ('2019-02-09 23:01:44', 9500, 2, 3);
 
 
 -- Выборка всех категорий
@@ -100,8 +100,8 @@ SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALES
   GROUP BY l.lot_id
   ORDER BY l.adding_date DESC;
 
--- Показывает лот по его id. Получает также название категории, к которой принадлежит лот
-SELECT l.*, c.name AS category
+-- Показывает лот по его id. Получает также название категории, к которой принадлежит лот, и текущую цену
+SELECT l.*, c.name AS category, COALESCE((SELECT MAX(amount) FROM bets WHERE lot_id = 3), starting_price) AS price
   FROM lots l
   JOIN categories c USING (category_id)
   WHERE lot_id = 3;

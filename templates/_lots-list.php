@@ -16,11 +16,11 @@
                     <span class="lot__amount">Стартовая цена</span>
                     <span class="lot__cost"><?=price_format($lot['starting_price']); ?></span>
                     <?php else: ?>
-                    <span class="lot__amount"><?=bets_count_format($lot['bets_count']); ?></span>
+                    <span class="lot__amount"><?=$lot['bets_count']; ?> <?=num_format($lot['bets_count'], 'ставка'); ?></span>
                     <span class="lot__cost"><?=price_format($lot['price']); ?></span>
                     <?php endif; ?>
                 </div>
-                <?php if (strpos(get_lot_expiry_time($lot['expiry_date']), ':')): ?>
+                <?php if (is_lot_finishing($lot['expiry_date'])): ?>
                 <div class="lot__timer timer timer--finishing">
                 <?php else: ?>
                 <div class="lot__timer timer">

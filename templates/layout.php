@@ -25,13 +25,13 @@
             <a class="main-header__add-lot button" href="/add-lot.php">Добавить лот</a>
 
             <nav class="user-menu">
-                <?php if (count($user)): ?>
+                <?php if ($user): ?>
                     <div class="user-menu__image">
                         <img src="<?='/' . $avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
                     </div>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
-                        <a href="/my-lots.php">Мои ставки</a>
+                        <a href="/my-lots.php/?user=<?=$user['user_id']; ?>">Мои ставки</a>
                         <a href="#">Выйти</a>
                     </div>
                 <?php else: ?>

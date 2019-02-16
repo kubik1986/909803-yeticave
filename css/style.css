@@ -740,6 +740,11 @@ main.container {
   margin-right: 0;
 }
 
+.pagination-item-prev a:not([href]):hover,
+.pagination-item-next a:not([href]):hover {
+  color: #879296;
+}
+
 .pagination-item-active a {
   color: #25434e;
   background-color: rgba(135, 146, 150, 0.1);
@@ -1014,10 +1019,7 @@ input:invalid .form__error{
 }
 
 .lot-item__timer {
-  -webkit-align-self: flex-end;
-  -ms-flex-item-align: end;
-  align-self: flex-end;
-  width: 80px;
+  display: inline-block;
   margin-bottom: 19px;
   box-sizing: border-box;
 }

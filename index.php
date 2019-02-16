@@ -1,17 +1,13 @@
 <?php
 require_once('init.php');
 
+$data['is_main_page'] = true;
+
 // Количество лотов, выводимых на страницу
 $lots_limit = 9;
 
-// ID категории лота
-$category_id = false;
-
-// ID страницы при постраничной навигации
-$page_id = false;
-
 // Открытые лоты
-$lots = db_get_opened_lots($link, $lots_limit, $category_id, $page_id);
+$lots = db_get_opened_lots($link, $lots_limit);
 
 $lots_list = include_template('_lots-list.php', array_merge($data, [
     'lots' => $lots
@@ -23,9 +19,7 @@ $page_content = include_template('index.php', array_merge($data, [
 $layout_content = include_template('layout.php', array_merge($data, [
     'content' => $page_content,
     'user' => $user,
-    'categories' => $categories,
-    'is_main_page' => $is_main_page,
-    'category_id' => $category_id
+    'categories' => $categories
 ]));
 print($layout_content);
 ?>
