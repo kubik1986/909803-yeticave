@@ -19,7 +19,7 @@ $data = [
 ];
 
 // Флаг нахождения на главной странице
-$is_main_page = ($_SERVER['REQUEST_URI'] === '/');
+$is_main_page = $_SERVER['REQUEST_URI'] === '/' || stripos($_SERVER['REQUEST_URI'], 'index.php');
 
 // Категории
 $categories = db_get_categories($link);
