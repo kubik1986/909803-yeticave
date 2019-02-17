@@ -1,7 +1,7 @@
 <?php
 require_once('init.php');
 
-$data['is_main_page'] = true;
+$init_data['is_main_page'] = true;
 
 // Количество лотов, выводимых на страницу
 $lots_limit = 3;
@@ -21,7 +21,7 @@ if ($page_id <= 0  || $page_id > $pages_count) {
     $page_id = 1;
 }
 if (isset($_GET['page'])) {
-    $data['is_main_page'] = false;
+    $init_data['is_main_page'] = false;
 }
 
 // Данные для блока пагинации
@@ -30,15 +30,15 @@ $pagination_data = get_pagination_data($pages_count, $page_id, [], 10);
 // Открытые лоты на текущей странице
 $lots = db_get_opened_lots($link, $lots_limit, false, $page_id);
 
-$lots_list = include_template('_lots-list.php', array_merge($data, [
+$lots_list = include_template('_lots-list.php', array_merge($init_data, [
     'lots' => $lots
 ]));
-$page_content = include_template('index.php', array_merge($data, [
+$page_content = include_template('index.php', array_merge($init_data, [
     'categories' => $categories,
     'lots_list' => $lots_list,
     'pagination_data' => $pagination_data
 ]));
-$layout_content = include_template('layout.php', array_merge($data, [
+$layout_content = include_template('layout.php', array_merge($init_data, [
     'content' => $page_content,
     'user' => $user,
     'categories' => $categories
