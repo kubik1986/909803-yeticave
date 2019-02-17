@@ -14,9 +14,7 @@ if (!$lot) {
         'title' => '404 - Страница не найдена',
         'content' => $page_content,
         'user' => $user,
-        'categories' => $categories,
-        'is_main_page' => $is_main_page,
-        'category_id' => $category_id
+        'categories' => $categories
     ]));
     print($layout_content);
     exit();

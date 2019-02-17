@@ -5,7 +5,7 @@ require_once('init.php');
 $lots_limit = 9;
 
 // ID категории лота
-$category_id = isset($_GET['category']) ? intval($_GET['category']) : false;
+$category_id = isset($_GET['category']) ? intval($_GET['category']) : 1;
 if ($category_id <= 0 || $category_id > count($categories)) {
     $category_id = 1;
 }

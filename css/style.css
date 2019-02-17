@@ -926,6 +926,7 @@ input:invalid .form__error{
 .preview {
   display: none;
   position: absolute;
+  z-index: 10;
 }
 
 .preview__remove {

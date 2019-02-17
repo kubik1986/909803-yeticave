@@ -19,7 +19,11 @@
                 <img src="/img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="/search.php">
+                <?php if ($category_id): ?>
+                <input type="search" name="search" placeholder="Поиск лота в категории «<?=$categories[$category_id - 1]['name']; ?>»">
+                <?php else: ?>
                 <input type="search" name="search" placeholder="Поиск лота">
+                <?php endif; ?>
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
             <a class="main-header__add-lot button" href="/add-lot.php">Добавить лот</a>

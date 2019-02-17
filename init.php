@@ -25,7 +25,7 @@ $categories = db_get_categories($link);
 
 // Пользователь
 $user = [
-    'user_id' => 3,
+    'user_id' => '3',
     'name' => 'Василий',
     'avatar' => 'user.jpg'
 ];

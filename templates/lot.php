@@ -23,17 +23,17 @@
                         <span class="lot-item__cost"><?=price_format($lot['price'], false); ?></span>
                     </div>
                     <div class="lot-item__min-cost">
-                        Мин. ставка <span><?=price_format(intval($lot['price']) + intval($lot['bet_step']), false); ?> р</span>
+                        Мин. ставка <span><?=price_format($lot['price'] + $lot['bet_step'], false); ?> р</span>
                     </div>
                 </div>
                 <?php if (!is_lot_closed($lot['expiry_date']) &&
                     $user &&
-                    intval($user['user_id']) !== intval($lot['author_id']) &&
-                    (!$bets || intval($bets[0]['user_id']) !== intval($user['user_id']))): ?>
+                    $user['user_id'] !== $lot['author_id'] &&
+                    (!$bets || $bets[0]['user_id'] !== $user['user_id'])): ?>
                 <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
                     <p class="lot-item__form-item form__item form__item--invalid">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="text" name="cost" placeholder="<?=price_format(intval($lot['price']) + intval($lot['bet_step']), false); ?>">
+                        <input id="cost" type="text" name="cost" placeholder="<?=price_format($lot['price'] + $lot['bet_step'], false); ?>">
                         <span class="form__error">Текст ошибки</span>
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
@@ -47,7 +47,7 @@
                     <?php foreach($bets as $bet): ?>
                     <tr class="history__item">
                         <td class="history__name"><?=htmlspecialchars($bet['user']); ?></td>
-                        <td class="history__price"><?=price_format(intval($bet['amount']), false); ?> р</td>
+                        <td class="history__price"><?=price_format($bet['amount'], false); ?> р</td>
                         <td class="history__time"><?=get_bet_add_time($bet['adding_date']); ?></td>
                     </tr>
                     <?php endforeach; ?>
