@@ -15,7 +15,7 @@ $data['category_id'] = $category_id;
 $lots_count = db_get_opened_lots($link, false, $category_id, false, true);
 
 // Число страниц для отображения лотов
-$pages_count = floor($lots_count / $lots_limit);
+$pages_count = (int) floor($lots_count / $lots_limit);
 if ($lots_count % $lots_limit !== 0) {
     $pages_count++;
 }
