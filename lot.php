@@ -8,10 +8,14 @@ $lot_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $lot = !empty($lot_id) ? db_get_lot($link, $lot_id) : [];
 
 if (empty($lot)) {
-    header("HTTP/1.0 404 Not Found");
-    $page_content = include_template('404.php', []);
-    $layout_content = include_template('layout.php', array_merge($init_data, [
+    $error = [
         'title' => '404 - Страница не найдена',
+        'message' => 'Данной страницы не существует на сайте.'
+    ];
+    header("HTTP/1.0 404 Not Found");
+    $page_content = include_template('error.php', ['error' => $error]);
+    $layout_content = include_template('layout.php', array_merge($init_data, [
+        'title' => $error['title'],
         'content' => $page_content,
         'user' => $user,
         'categories' => $categories
