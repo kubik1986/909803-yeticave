@@ -20,6 +20,9 @@ $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page_id <= 0  || $page_id > $pages_count) {
     $page_id = 1;
 }
+if (isset($_GET['page'])) {
+    $data['is_main_page'] = false;
+}
 
 // Данные для блока пагинации
 $pagination_data = get_pagination_data($pages_count, $page_id, [], 10);
