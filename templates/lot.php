@@ -10,11 +10,7 @@
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state">
-                <?php if (is_lot_finishing($lot['expiry_date'])): ?>
-                <div class="lot-item__timer timer timer--finishing">
-                <?php else: ?>
-                <div class="lot-item__timer timer">
-                <?php endif; ?>
+                <div class="lot-item__timer timer<?=is_lot_finishing($lot['expiry_date']) ? ' timer--finishing' : ''; ?>">
                     <?=get_lot_expiry_time($lot['expiry_date']); ?>
                 </div>
                 <div class="lot-item__cost-state">
@@ -27,9 +23,9 @@
                     </div>
                 </div>
                 <?php if (!is_lot_closed($lot['expiry_date']) &&
-                    $user &&
+                    !empty($user) &&
                     $user['user_id'] !== $lot['author_id'] &&
-                    (!$bets || $bets[0]['user_id'] !== $user['user_id'])): ?>
+                    (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])): ?>
                 <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
                     <p class="lot-item__form-item form__item form__item--invalid">
                         <label for="cost">Ваша ставка</label>
@@ -42,7 +38,7 @@
             </div>
             <div class="history">
                 <h3>История ставок (<span><?=count($bets); ?></span>)</h3>
-                <?php if ($bets): ?>
+                <?php if (!empty($bets)): ?>
                 <table class="history__list">
                     <?php foreach($bets as $bet): ?>
                     <tr class="history__item">
