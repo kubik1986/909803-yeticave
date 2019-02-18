@@ -75,6 +75,27 @@ function db_get_categories($link) {
 }
 
 /**
+ * Возвращает массив данных для указанной категории
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @return array Массив данных указанной категории
+ */
+function db_get_category($link, $category_id) {
+    $result = [];
+    $sql =
+        "SELECT *
+            FROM categories
+            WHERE category_id = $category_id";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
  * Возвращает массив открытых лотов или количество открытых лотов
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
