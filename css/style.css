@@ -856,6 +856,7 @@ main.container {
 .form__error {
   display: none;
   font-size: 11px;
+  line-height: 16px;
   color: #f84646;
 }
 
