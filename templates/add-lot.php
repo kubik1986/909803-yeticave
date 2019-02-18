@@ -1,4 +1,4 @@
-<form class="form form--add-lot container<?=empty($errors) ? '' : ' form--invalid'; ?>" action="add-lot.php" method="post">
+<form class="form form--add-lot container<?=empty($errors) ? '' : ' form--invalid'; ?>" action="add-lot.php" method="post" enctype="multipart/form-data">
     <h2>Добавление лота</h2>
     <div class="form__container-two">
         <div class="form__item<?=!isset($errors['lot-name']) ? '' : ' form__item--invalid'; ?>">
@@ -22,7 +22,7 @@
         <textarea id="message" name="message" placeholder="Напишите описание лота" required><?=empty($data['message']) ? '' : $data['message']; ?></textarea>
         <span class="form__error"><?=!isset($errors['message']) ? '' : $errors['message']; ?></span>
     </div>
-    <div class="form__item form__item--file">
+    <div class="form__item form__item--file<?=!isset($errors['photo']) ? '' : ' form__item--invalid'; ?>">
         <label>Изображение</label>
         <div class="form__input-file">
             <input class="visually-hidden" id="photo2" type="file" name="photo">
