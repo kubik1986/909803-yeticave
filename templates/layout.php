@@ -15,7 +15,7 @@
                 <img src="/img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="/search.php">
-                <input type="search" name="search" placeholder="Поиск лота<?=empty($category_id) ? '' : ' в категории «' . $categories[$category_id - 1]['name'] . '»'; ?>">
+                <input type="search" name="search" placeholder="Поиск лота<?=empty($current_category) ? '' : ' в категории «' . $current_category['name'] . '»'; ?>">
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
             <a class="main-header__add-lot button" href="/add-lot.php">Добавить лот</a>
@@ -51,7 +51,7 @@
         <nav class="nav">
             <ul class="nav__list container">
                 <?php foreach ($categories as $category): ?>
-                    <li class="nav__item<?=(!empty($category_id) && intval($category['category_id']) === $category_id) ? ' nav__item--current' : ''; ?>">
+                    <li class="nav__item<?=(!empty($current_category) && $category['category_id'] === $current_category['category_id']) ? ' nav__item--current' : ''; ?>">
                         <a href="/all-lots.php/?category=<?=$category['category_id']; ?>"><?=$category['name']; ?></a>
                     </li>
                 <?php endforeach; ?>

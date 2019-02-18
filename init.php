@@ -17,7 +17,7 @@ $init_data = [
     'avatar_path' => $config['avatar_path'],
     'lot_img_path' => $config['lot_img_path'],
     'is_main_page' => false,
-    'category_id' => false
+    'current_category' => []
 ];
 
 // Категории
