@@ -112,9 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     }
                     $expiry_date = date_create($data[$key]);
                     date_time_set($expiry_date, 0, 0);
-                    $today = date_create('today');
-                    $calendar_diff = date_diff($expiry_date, $today);
-                    if (date_create('now') >= $expiry_date || intval(date_interval_format($calendar_diff, '%a')) < 1) {
+                    if (date_create('now') >= $expiry_date) {
                         $errors[$key] = 'Дата окончания лота должна быть на 1 день больше текущей даты';
                     }
                 }
