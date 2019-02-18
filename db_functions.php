@@ -1,5 +1,42 @@
 <?php
 /**
+ * Создает подготовленное выражение на основе готового SQL запроса и переданных данных
+ *
+ * @param mysqli $link  Ресурс соединения
+ * @param string $sql SQL запрос с плейсхолдерами вместо значений
+ * @param array $data Данные для вставки на место плейсхолдеров
+ *
+ * @return mysqli_stmt Подготовленное выражение
+ */
+function db_get_prepare_stmt($link, $sql, $data = []) {
+    $stmt = mysqli_prepare($link, $sql);
+    if ($data) {
+        $types = '';
+        $stmt_data = [];
+        foreach ($data as $value) {
+            $type = null;
+            if (is_int($value)) {
+                $type = 'i';
+            }
+            else if (is_string($value)) {
+                $type = 's';
+            }
+            else if (is_double($value)) {
+                $type = 'd';
+            }
+            if ($type) {
+                $types .= $type;
+                $stmt_data[] = $value;
+            }
+        }
+        $values = array_merge([$stmt, $types], $stmt_data);
+        $func = 'mysqli_stmt_bind_param';
+        $func(...$values);
+    }
+    return $stmt;
+}
+
+/**
  * Создает подключение к сервру MySQL и возвращает идентификатор подключения
  *
  * @param array $db Массив с параметрами подключения
@@ -122,5 +159,37 @@ function db_get_bets($link, $lot_id) {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
+}
+
+/**
+ * Выполняет запись новой строки в таблицу лотов базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_lot($link, $data) {
+    $lot_id = '';
+    $sql =
+        "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $data['lot-name'],
+        $data['message'],
+        $data['file-name'],
+        $data['lot-rate'],
+        $data['lot-date'],
+        $data['lot-step'],
+        $data['category'],
+        $data['author']
+    ]);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $lot_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $lot_id;
 }
 ?>
