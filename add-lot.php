@@ -39,84 +39,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $data[$key] = trim($_POST[$key]);
         }
         else {
-            if ($key !== 'category') {
-                $errors[$key] = 'Это поле необходимо заполнить';
-            }
-            else {
-                $errors[$key] = 'Выберите категорию';
-            }
+            $errors[$key] = 'Это поле необходимо заполнить';
         }
     }
 
-    foreach ($data as $key => $value) {
-        if ($key === 'lot-name') {
-            if (strlen($value) > $title_max_length) {
-                $errors[$key] = 'Наименование лота слишком длинное. Максимальное количество символов - ' . $title_max_length;
-            }
-            continue;
+    if (empty($errors['lot-name']) && strlen($data['lot-name']) > $title_max_length) {
+        $errors['lot-name'] = 'Наименование лота слишком длинное. Максимальное количество символов - ' . $title_max_length;
+    }
+    if (empty($errors['category']) && empty(db_get_category($link, $data['category']))) {
+        $errors['category'] = 'Выберите категорию';
+        $data['category'] = '';
+    }
+    if (empty($errors['message']) && strlen($data['message']) > $description_max_length) {
+        $errors['message'] = 'Описание лота слишком длинное. Максимальное количество символов - ' . $description_max_length;
+    }
+    if (empty($errors['lot-rate'])) {
+        $data['lot-rate'] = str_replace(',', '.', $data['lot-rate']);
+        if (!is_numeric($data['lot-rate']) || $data['lot-rate'] <= 0) {
+            $errors['lot-rate'] = 'Цена должна быть положительным числом';
         }
-        if ($key === 'category') {
-            $value = intval($value);
-            if ($value <= 0 || $value > count($categories)) {
-                $errors[$key] = 'Выберите категорию';
-                $data[$key] = '';
-            }
-            continue;
+        elseif ($data['lot-rate'] > $max_price) {
+            $errors['lot-rate'] = 'Цена слишком высокая. Максимальная цена - ' . $max_price . ' р';
         }
-        if ($key === 'message') {
-            if (strlen($value) > $description_max_length) {
-                $errors[$key] = 'Описание лота слишком длинное. Максимальное количество символов - ' . $description_max_length;
-            }
-            continue;
+        else {
+            $data['lot-rate'] = ceil($data['lot-rate']);
         }
-        if ($key === 'lot-rate') {
-            $value = str_replace(',', '.', $value);
-            $data[$key] = $value;
-            if (!is_numeric($value) || $value <= 0) {
-                $errors[$key] = 'Цена должна быть положительным числом';
-            }
-            elseif ($value > $max_price) {
-                $errors[$key] = 'Цена слишком высокая. Максимальная цена - ' . $max_price . ' р';
-            }
-            else {
-                $data[$key] = ceil($value);
-            }
-            continue;
+    }
+    if (empty($errors['lot-step'])) {
+        if (!ctype_digit($data['lot-step']) || $data['lot-step'] <= 0) {
+            $errors['lot-step'] = 'Шаг ставки должен быть целым положительным числом';
         }
-        if ($key === 'lot-step') {
-            if (!ctype_digit($value) || $value <= 0) {
-                $errors[$key] = 'Шаг ставки должен быть целым положительным числом';
-            }
-            elseif ($value > $max_bet_step) {
-                $errors[$key] = 'Шаг ставки слишком высок. Максимальный шаг - ' . $max_bet_step . ' р';
-            }
-            continue;
+        elseif ($data['lot-step'] > $max_bet_step) {
+            $errors['lot-step'] = 'Шаг ставки слишком высок. Максимальный шаг - ' . $max_bet_step . ' р';
         }
-        if ($key === 'lot-date') {
-            $is_correct_iso_format = preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}/', $value);
-            $is_correct_local_format = preg_match('/[0-9]{2}\.[0-9]{2}\.[0-9]{4}/', $value);
-            if (!$is_correct_iso_format && !$is_correct_local_format) {
-                $errors[$key] = 'Дата должна быть в формате ДД.ММ.ГГГГ';
-            }
-            else {
-                $date_separate = $is_correct_iso_format ? explode('-', $value) : explode('.', $value);
-                $day = $is_correct_iso_format ? $date_separate[2] : $date_separate[0];
-                $month = $date_separate[1];
-                $year = $is_correct_iso_format ? $date_separate[0] : $date_separate[2];
-                if (!checkdate($month, $day, $year)) {
-                    $errors[$key] = 'Дата некорректна';
-                }
-                else {
-                    if ($is_correct_local_format) {
-                        $data[$key] = implode('-', array_reverse($date_separate));
-                    }
-                    $expiry_date = date_create($data[$key]);
-                    date_time_set($expiry_date, 0, 0);
-                    if (date_create('now') >= $expiry_date) {
-                        $errors[$key] = 'Дата окончания лота должна быть на 1 день больше текущей даты';
-                    }
-                }
-            }
+    }
+    if (empty($errors['lot-date'])) {
+        $date = strtotime($data['lot-date']);
+        $data['lot-date'] = !$date ? $data['lot-date'] : date('Y-m-d', $date);
+        if (!$date) {
+            $errors['lot-date'] = 'Дата некорректна';
+        }
+        elseif (time() >= $date) {
+            $errors['lot-date'] = 'Дата окончания лота должна быть на 1 день больше текущей даты';
         }
     }
 
