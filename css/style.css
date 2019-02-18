@@ -856,6 +856,7 @@ main.container {
 .form__error {
   display: none;
   font-size: 11px;
+  line-height: 16px;
   color: #f84646;
 }
 
@@ -926,6 +927,7 @@ input:invalid .form__error{
 .preview {
   display: none;
   position: absolute;
+  z-index: 10;
 }
 
 .preview__remove {

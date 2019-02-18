@@ -3,18 +3,14 @@
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="<?='/' . $lot_img_path . $lot['img']; ?>" width="730" height="548" alt="">
+                <img src="<?=$lot_img_path . $lot['img']; ?>" width="730" height="548" alt="">
             </div>
             <p class="lot-item__category">Категория: <span><?=$lot['category']; ?></span></p>
             <p class="lot-item__description"><?=htmlspecialchars($lot['description']); ?></p>
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state">
-                <?php if (is_lot_finishing($lot['expiry_date'])): ?>
-                <div class="lot-item__timer timer timer--finishing">
-                <?php else: ?>
-                <div class="lot-item__timer timer">
-                <?php endif; ?>
+                <div class="lot-item__timer timer<?=is_lot_finishing($lot['expiry_date']) ? ' timer--finishing' : ''; ?>">
                     <?=get_lot_expiry_time($lot['expiry_date']); ?>
                 </div>
                 <div class="lot-item__cost-state">
@@ -23,17 +19,17 @@
                         <span class="lot-item__cost"><?=price_format($lot['price'], false); ?></span>
                     </div>
                     <div class="lot-item__min-cost">
-                        Мин. ставка <span><?=price_format(intval($lot['price']) + intval($lot['bet_step']), false); ?> р</span>
+                        Мин. ставка <span><?=price_format($lot['price'] + $lot['bet_step'], false); ?> р</span>
                     </div>
                 </div>
                 <?php if (!is_lot_closed($lot['expiry_date']) &&
-                    $user &&
-                    intval($user['user_id']) !== intval($lot['author_id']) &&
-                    (!$bets || intval($bets[0]['user_id']) !== intval($user['user_id']))): ?>
+                    !empty($user) &&
+                    $user['user_id'] !== $lot['author_id'] &&
+                    (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])): ?>
                 <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
                     <p class="lot-item__form-item form__item form__item--invalid">
                         <label for="cost">Ваша ставка</label>
-                        <input id="cost" type="text" name="cost" placeholder="<?=price_format(intval($lot['price']) + intval($lot['bet_step']), false); ?>">
+                        <input id="cost" type="text" name="cost" placeholder="<?=price_format($lot['price'] + $lot['bet_step'], false); ?>">
                         <span class="form__error">Текст ошибки</span>
                     </p>
                     <button type="submit" class="button">Сделать ставку</button>
@@ -42,12 +38,12 @@
             </div>
             <div class="history">
                 <h3>История ставок (<span><?=count($bets); ?></span>)</h3>
-                <?php if ($bets): ?>
+                <?php if (!empty($bets)): ?>
                 <table class="history__list">
                     <?php foreach($bets as $bet): ?>
                     <tr class="history__item">
                         <td class="history__name"><?=htmlspecialchars($bet['user']); ?></td>
-                        <td class="history__price"><?=price_format(intval($bet['amount']), false); ?> р</td>
+                        <td class="history__price"><?=price_format($bet['amount'], false); ?> р</td>
                         <td class="history__time"><?=get_bet_add_time($bet['adding_date']); ?></td>
                     </tr>
                     <?php endforeach; ?>

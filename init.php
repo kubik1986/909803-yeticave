@@ -12,7 +12,7 @@ mysqli_set_charset($link, "utf8");
 date_default_timezone_set($config['timezone']);
 
 // Массив общих данных для передачи в функцию-шаблонизатор
-$data = [
+$init_data = [
     'title' => $config['sitename'] . ' - интернет-аукцион сноубордического и горнолыжного снаряжения',
     'avatar_path' => $config['avatar_path'],
     'lot_img_path' => $config['lot_img_path'],
@@ -25,7 +25,7 @@ $categories = db_get_categories($link);
 
 // Пользователь
 $user = [
-    'user_id' => 3,
+    'user_id' => '3',
     'name' => 'Василий',
     'avatar' => 'user.jpg'
 ];
