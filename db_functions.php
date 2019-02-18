@@ -87,7 +87,7 @@ function db_get_category($link, $category_id) {
             FROM categories
             WHERE category_id = $category_id";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
