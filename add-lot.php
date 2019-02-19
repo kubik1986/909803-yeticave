@@ -3,13 +3,13 @@ require_once('init.php');
 
 if(empty($user)) {
     header("HTTP/1.0 401 Unauthorized");
-    $error = [
+    $user_error = [
         'title' => '401 - Требуется авторизация',
         'message' => 'Добавление лотов доступно только авторизованным пользователям. Пожалуйста, ввойдите в свой аккаунт, если у вас уже есть учетная запись, или зарегистрируйтесь.'
     ];
-    $page_content = include_template('error.php', ['error' => $error]);
+    $page_content = include_template('error.php', ['error' => $user_error]);
     $layout_content = include_template('layout.php', array_merge($init_data, [
-        'title' => $error['title'],
+        'title' => $user_error['title'],
         'content' => $page_content,
         'user' => $user,
         'categories' => $categories
