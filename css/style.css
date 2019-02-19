@@ -213,6 +213,12 @@ main.container {
 }
 
 .main-header__add-lot {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
   max-width: 160px;
   margin-right: 30px;
 }
@@ -256,6 +262,9 @@ main.container {
 }
 
 .user-menu__image {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   margin-right: 10px;
