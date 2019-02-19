@@ -213,4 +213,31 @@ function db_add_lot($link, $data) {
     }
     return $lot_id;
 }
+
+/**
+ * Выполняет запись новой строки в таблицу ставок базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_bet($link, $data) {
+    $bet_id = '';
+    $sql =
+        "INSERT INTO bets (amount, user_id, lot_id)
+          VALUES (?, ?, ?)";
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $data['cost'],
+        $data['user_id'],
+        $data['lot_id']
+    ]);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $bet_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $bet_id;
+}
 ?>
