@@ -12,8 +12,8 @@ if (isset($_GET['category'])) {
 }
 $current_category = db_get_category($link, $category_id);
 if (empty($current_category)) {
-    $category_id = 1;
-    $current_category = db_get_category($link, $category_id);
+    header("Location: /all-lots.php/?category=1");
+    exit();
 }
 $init_data['current_category'] = $current_category;
 
@@ -22,14 +22,15 @@ $lots_count = db_get_opened_lots($link, false, $category_id, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = (int) floor($lots_count / $lots_limit);
-if ($lots_count % $lots_limit !== 0) {
+if ($lots_count === 0 || $lots_count % $lots_limit !== 0) {
     $pages_count++;
 }
 
 // ID страницы при постраничной навигации
 $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page_id <= 0  || $page_id > $pages_count) {
-    $page_id = 1;
+    header("Location: /all-lots.php/?category=" . $category_id);
+    exit();
 }
 
 // Данные для блока пагинации

@@ -36,21 +36,11 @@ $data = [];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $user_error = ''; // Ошибка, если пользователь не атворизован, либо пользователь не имеет право делать ставку
-    $user_error_header = 'HTTP/1.0 403 Forbidden';
-    if (empty($user)) {
-        $user_error_header = 'HTTP/1.0 401 Unauthorized';
-        $user_error = 'Добавление ставок доступно только авторизованным пользователям. Пожалуйста, ввойдите в свой аккаунт, если у вас уже есть учетная запись, или зарегистрируйтесь.';
-    }
-    elseif ($user['user_id'] === $lot['author_id']) {
-        $user_error = 'Вы не можете делать ставки по этому лоту, так как лот создан вами.';
-    }
-    elseif (!empty($bets) && $bets[0]['user_id'] === $user['user_id']) {
-        $user_error = 'Вы не можете повторно cделать ставку по этому лоту.';
-    }
-    if(!empty($user_error)) {
-        header($user_error_header);
-        exit($user_error);
+    if (empty($user) ||
+    $user['user_id'] === $lot['author_id'] ||
+    (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
+        header("Location: /lot.php/?id=" . $lot_id);
+        exit();
     }
 
     if (isset($_POST['cost']) && !empty(trim($_POST['cost']))) {

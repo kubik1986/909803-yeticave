@@ -11,14 +11,15 @@ $lots_count = db_get_opened_lots($link, false, false, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = (int) floor($lots_count / $lots_limit);
-if ($lots_count % $lots_limit !== 0) {
+if ($lots_count === 0 || $lots_count % $lots_limit !== 0) {
     $pages_count++;
 }
 
 // ID страницы при постраничной навигации
 $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page_id <= 0  || $page_id > $pages_count) {
-    $page_id = 1;
+    header("Location: /");
+    exit();
 }
 if (isset($_GET['page'])) {
     $init_data['is_main_page'] = false;
