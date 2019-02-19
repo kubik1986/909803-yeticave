@@ -57,9 +57,7 @@
                 <?php endforeach; ?>
             </ul>
         </nav>
-        <div class="container">
-            <?=$content; ?>
-        </div>
+        <?=$content; ?>
     </main>
   <?php endif; ?>
 </div>

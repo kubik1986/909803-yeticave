@@ -11,12 +11,18 @@
     </ul>
 </section>
 <?php endif; ?>
-<section class="lots">
-    <div class="lots__header">
-        <h2>Открытые лоты</h2>
-    </div>
-    <?=$lots_list; ?>
-</section>
+<?php if (!$is_main_page): ?>
+<div class="container">
+<?php endif; ?>
+    <section class="lots">
+        <div class="lots__header">
+            <h2>Открытые лоты</h2>
+        </div>
+        <?=$lots_list; ?>
+    </section>
 <?php if (!empty($pagination_data)): ?>
 <?=include_template('_pagination.php', ['pagination_data' => $pagination_data]); ?>
+<?php endif; ?>
+<?php if (!$is_main_page): ?>
+</div>
 <?php endif; ?>
