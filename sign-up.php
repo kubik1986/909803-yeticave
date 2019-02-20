@@ -1,10 +1,10 @@
 <?php
 require_once('init.php');
 
-// if(!empty($user)) {
-//     header("Location: /");
-//     exit();
-// }
+if(!empty($user)) {
+    header("Location: /");
+    exit();
+}
 
 $psw_min_length = 8;
 $psw_max_length = 72;
