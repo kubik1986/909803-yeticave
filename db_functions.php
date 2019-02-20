@@ -169,10 +169,37 @@ function db_get_bets($link, $lot_id) {
     $result = [];
     $sql =
         "SELECT adding_date, amount, b.user_id, u.name AS user
-          FROM bets b
-          JOIN users u USING (user_id)
-          WHERE lot_id = $lot_id
-          ORDER BY adding_date DESC";
+            FROM bets b
+            JOIN users u USING (user_id)
+            WHERE lot_id = $lot_id
+            ORDER BY adding_date DESC";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
+ * Возвращает массив ставок, которые сделал указанный пользователь
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int $user_id ID пользователя
+ * @return array Массив ставок указанного пользователя
+ */
+function db_get_user_bets($link, $user_id) {
+    $result = [];
+    $sql =
+        "SELECT l.lot_id, l.title AS lot_title, c.name AS category, l.expiry_date AS lot_expiry_date, MAX(amount) AS amount, MAX(b.adding_date) AS adding_date, l.winner_id, l.img, l.author_id AS lot_author_id, u.contacts AS lot_author_contacts
+            FROM bets b
+            JOIN lots l USING (lot_id)
+            JOIN users u USING (user_id)
+            JOIN categories c ON l.category_id = c.category_id
+            WHERE user_id = $user_id
+            GROUP BY l.lot_id, l.title, c.name, l.expiry_date, l.winner_id, l.img, l.author_id, u.contacts
+            ORDER BY adding_date DESC";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
     }
@@ -193,7 +220,7 @@ function db_add_lot($link, $data) {
     $lot_id = '';
     $sql =
         "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = db_get_prepare_stmt($link, $sql, [
         $data['lot-name'],
         $data['message'],
@@ -225,7 +252,7 @@ function db_add_bet($link, $data) {
     $bet_id = '';
     $sql =
         "INSERT INTO bets (amount, user_id, lot_id)
-          VALUES (?, ?, ?)";
+            VALUES (?, ?, ?)";
     $stmt = db_get_prepare_stmt($link, $sql, [
         $data['cost'],
         $data['user_id'],
@@ -294,7 +321,7 @@ function db_add_user($link, $data) {
     }
     $sql =
         "INSERT INTO users (name, password, email, contacts $avatar_field)
-          VALUES (?, ?, ?, ? $avatar_value)";
+            VALUES (?, ?, ?, ? $avatar_value)";
     $stmt = db_get_prepare_stmt($link, $sql, $stmt_data);
     $result = mysqli_stmt_execute($stmt);
     if ($result) {
