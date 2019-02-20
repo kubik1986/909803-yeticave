@@ -27,6 +27,6 @@ $categories = db_get_categories($link);
 $user = [
     'user_id' => '3',
     'name' => 'Василий',
-    'avatar' => 'user.jpg'
+    'avatar' => 'user-3-avatar.jpg'
 ];
 ?>
