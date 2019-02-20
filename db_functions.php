@@ -183,7 +183,7 @@ function db_get_bets($link, $lot_id) {
 }
 
 /**
- * Выполняет запись новой строки в таблицу лотов базы данных на основе переданных данных и возвращает идентификатор этой строки
+ * Выполняет запись новой строки в таблицу lots базы данных на основе переданных данных и возвращает идентификатор этой строки
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param array $data Массив данных для подготовленного выражения
@@ -215,7 +215,7 @@ function db_add_lot($link, $data) {
 }
 
 /**
- * Выполняет запись новой строки в таблицу ставок базы данных на основе переданных данных и возвращает идентификатор этой строки
+ * Выполняет запись новой строки в таблицу bets базы данных на основе переданных данных и возвращает идентификатор этой строки
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param array $data Массив данных для подготовленного выражения
@@ -242,7 +242,7 @@ function db_add_bet($link, $data) {
 }
 
 /**
- * Определяет, существует ли запись в таблице пользователей, у которой значение поля email совпадает с указанным
+ * Определяет, существует ли запись в таблице users, у которой значение поля email совпадает с указанным
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param string $email E-mail адрес
@@ -261,5 +261,48 @@ function db_is_registered_email($link, $email) {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return !($result === 0);
+}
+
+/**
+ * Выполняет запись новой строки в таблицу users базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_user($link, $data) {
+    $user_id = '';
+    $avatar_field = empty($data['file-name']) ? '' : ',avatar';
+    $avatar_value = empty($data['file-name']) ? '' : ',?';
+    $stmt_data = [];
+    if (empty($data['file-name'])) {
+        $stmt_data = [
+            $data['name'],
+            $data['password'],
+            $data['email'],
+            $data['message']
+        ];
+    }
+    else {
+        $stmt_data = [
+            $data['name'],
+            $data['password'],
+            $data['email'],
+            $data['message'],
+            $data['file-name']
+        ];
+    }
+    $sql =
+        "INSERT INTO users (name, password, email, contacts $avatar_field)
+          VALUES (?, ?, ?, ? $avatar_value)";
+    $stmt = db_get_prepare_stmt($link, $sql, $stmt_data);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $user_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $user_id;
 }
 ?>
