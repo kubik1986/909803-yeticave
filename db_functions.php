@@ -240,4 +240,26 @@ function db_add_bet($link, $data) {
     }
     return $bet_id;
 }
+
+/**
+ * Определяет, существует ли запись в таблице пользователей, у которой значение поля email совпадает с указанным
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param string $email E-mail адрес
+ * @return bool true - запись с указанным e-mail найдена, false - запись не найдена
+ */
+function db_is_registered_email($link, $email) {
+    $result = 0;
+    $sql =
+        "SELECT user_id
+            FROM users
+            WHERE email = '$email'";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_num_rows($query);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return !($result === 0);
+}
 ?>
