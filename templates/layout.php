@@ -27,7 +27,7 @@
                     </div>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
-                        <a href="/my-lots.php/?user=<?=$user['user_id']; ?>">Мои ставки</a>
+                        <a href="/my-lots.php">Мои ставки</a>
                         <a href="#">Выйти</a>
                     </div>
                 <?php else: ?>
