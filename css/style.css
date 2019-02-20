@@ -671,12 +671,15 @@ main.container {
 
 .timer {
   position: relative;
+  display: inline-block;
+  min-width: 82px;
   padding: 6px 8px 5px 25px;
   background-color: #879296;
   font-size: 13px;
   line-height: 18px;
   color: #ffffff;
   border-radius: 2px;
+  box-sizing: border-box;
 }
 
 .timer::before {
@@ -1029,9 +1032,7 @@ input:invalid .form__error{
 }
 
 .lot-item__timer {
-  display: inline-block;
   margin-bottom: 19px;
-  box-sizing: border-box;
 }
 
 .lot-item__cost-state {
@@ -1243,21 +1244,6 @@ input:invalid .form__error{
 
 .rates__timer {
   width: 198px;
-}
-
-.rates__timer .timer {
-  width: 82px;
-  box-sizing: border-box;
-}
-
-.rates__timer .timer--win {
-  width: 112px;
-  box-sizing: border-box;
-}
-
-.rates__timer .timer--end {
-  width: 107px;
-  box-sizing: border-box;
 }
 
 .rates__price {
