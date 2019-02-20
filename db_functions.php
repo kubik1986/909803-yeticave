@@ -196,7 +196,7 @@ function db_get_user_bets($link, $user_id) {
             FROM bets b
             JOIN lots l USING (lot_id)
             JOIN users u USING (user_id)
-            JOIN categories c ON l.category_id = c.category_id
+            JOIN categories c USING (category_id)
             WHERE user_id = $user_id
             GROUP BY l.lot_id, l.title, c.name, l.expiry_date, l.winner_id, l.img, l.author_id, u.contacts
             ORDER BY adding_date DESC";
