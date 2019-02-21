@@ -43,11 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (strlen($data['password']) < $psw_min_length) {
             $errors['password'] = 'Минимальная длина пароля - ' . $psw_min_length . ' символов';
         }
-        if (strlen($data['password']) > $psw_max_length) {
+        elseif (strlen($data['password']) > $psw_max_length) {
             $errors['password'] = 'Максимальная длина пароля - ' . $psw_max_length . ' символов';
-        }
-        elseif (db_is_registered_email($link, $data['email'])) {
-            $errors['email'] = 'Пользователь с указанным e-mail уже зарегистрирован';
         }
     }
     if (empty($errors['name']) && strlen($data['name']) > $name_max_length) {
