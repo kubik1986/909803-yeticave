@@ -10,6 +10,10 @@ $current_category = [];
 if (isset($_GET['category'])) {
     $category_id = intval($_GET['category']);
 }
+else {
+    header("Location: all-lots.php?category=1");
+    exit();
+}
 $current_category = db_get_category($link, $category_id);
 if (empty($current_category)) {
     header("Location: all-lots.php?category=1");
