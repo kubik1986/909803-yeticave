@@ -104,11 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(empty($errors)) {
-        move_uploaded_file($_FILES['photo']['tmp_name'], __DIR__ . $init_data['lot_img_path'] . $file_name);
+        $file_dir =  $init_data['lot_img_path'];
+        move_uploaded_file($_FILES['photo']['tmp_name'], $file_dir . $file_name);
         $data['author'] = $user['user_id'];
         $data['file-name'] = $file_name;
         $lot_id = db_add_lot($link, $data);
-        header("Location: lot.php/?id=" . $lot_id);
+        header("Location: lot.php?id=" . $lot_id);
         exit();
     }
 }

@@ -74,7 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(empty($errors)) {
-        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . $init_data['avatar_path'] . $file_name);
+        $file_dir = $init_data['avatar_path'];
+        move_uploaded_file($_FILES['avatar']['tmp_name'], $file_dir . $file_name);
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         $data['file-name'] = $file_name;
         $user_id = db_add_user($link, $data);

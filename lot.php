@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($user) ||
     $user['user_id'] === $lot['author_id'] ||
     (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
-        header("Location: /lot.php/?id=" . $lot_id);
+        header("Location: lot.php?id=" . $lot_id);
         exit();
     }
 
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['lot_id'] = $lot_id;
         if (!is_lot_closed($lot['expiry_date'])) {
             $bet_id = db_add_bet($link, $data);
-            header("Location: /lot.php/?id=" . $lot_id);
+            header("Location: lot.php?id=" . $lot_id);
             exit();
         }
         else {

@@ -35,7 +35,7 @@
                     !empty($user) &&
                     $user['user_id'] !== $lot['author_id'] &&
                     (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])): ?>
-                <form class="lot-item__form" action="/lot.php/?id=<?=$lot['lot_id']; ?>" method="post">
+                <form class="lot-item__form" action="lot.php?id=<?=$lot['lot_id']; ?>" method="post">
                     <p class="lot-item__form-item form__item<?=!isset($errors['cost']) ? '' : ' form__item--invalid'; ?>">
                         <label for="cost">Ваша ставка</label>
                         <input id="cost" type="text" name="cost" placeholder="<?=$lot['price'] + $lot['bet_step']; ?>" required<?=empty($data['cost']) ? '' : ' value="' . $data['cost'] . '"'; ?>>

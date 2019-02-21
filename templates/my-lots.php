@@ -21,11 +21,11 @@
                 </div>
                 <?php if ($bet['winner_id'] === $user['user_id']): ?>
                 <div>
-                    <h3 class="rates__title"><a href="lot.php/?id=<?=$bet['lot_id']; ?>"><?=htmlspecialchars($bet['lot_title']); ?></a></h3>
+                    <h3 class="rates__title"><a href="lot.php?id=<?=$bet['lot_id']; ?>"><?=htmlspecialchars($bet['lot_title']); ?></a></h3>
                     <p><?=htmlspecialchars($bet['lot_author_contacts']); ?></p>
                 </div>
                 <?php else: ?>
-                <h3 class="rates__title"><a href="lot.php/?id=<?=$bet['lot_id']; ?>"><?=htmlspecialchars($bet['lot_title']); ?></a></h3>
+                <h3 class="rates__title"><a href="lot.php?id=<?=$bet['lot_id']; ?>"><?=htmlspecialchars($bet['lot_title']); ?></a></h3>
                 <?php endif; ?>
             </td>
             <td class="rates__category">
