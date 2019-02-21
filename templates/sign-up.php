@@ -22,6 +22,12 @@
     </div>
     <div class="form__item form__item--file form__item--last<?=!isset($errors['avatar']) ? '' : ' form__item--invalid'; ?>">
         <label>Аватар</label>
+        <div class="preview">
+            <button class="preview__remove" type="button">x</button>
+            <div class="preview__img">
+                <img src="img/avatar.jpg" width="113" height="113" alt="Изображение лота">
+            </div>
+        </div>
         <div class="form__input-file">
             <input class="visually-hidden" id="photo2" type="file" name="avatar" value="">
             <label for="photo2">
