@@ -23,7 +23,7 @@
             <nav class="user-menu">
                 <?php if (!empty($user)): ?>
                     <div class="user-menu__image">
-                        <img src="<?=$avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
+                        <img src="<?=empty($user['avatar']) ? 'img/user.png' : $avatar_path . $user['avatar']; ?>" width="40" height="40" alt="Аватар пользователя">
                     </div>
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
