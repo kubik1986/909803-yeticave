@@ -207,4 +207,30 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
     $pagination_data[$max_pages + 1] = ['page_number' => 'Вперед', 'class' => ' pagination-item-next', 'href' => $next_href];
     return $pagination_data;
 }
+
+/**
+ * Создает миниатюру изображения
+ *
+ * @param string $src Полный путь к файлу исходного изображения
+ * @param string $dest Полный путь к файлу целевого изображения
+ * @param int thumb_width Ширина целевого изображения в px
+ * @return void
+ */
+function make_thumb($src, $dest, $thumb_width) {
+    $file_type = mime_content_type($src);
+    $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
+    $width = imagesx($source_image);
+    $height = imagesy($source_image);
+
+    $thumb_height = floor($height * ($thumb_width / $width));
+    $virtual_image = imagecreatetruecolor($thumb_width, $thumb_height);
+    if ($file_type === 'image/png') {
+        imageAlphaBlending($virtual_image, false);
+        imageSaveAlpha($virtual_image, true);
+    }
+
+    imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+    $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
+    imagedestroy($virtual_image);
+}
 ?>

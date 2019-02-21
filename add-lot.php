@@ -110,6 +110,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['file-name'] = $file_name;
         $lot_id = db_add_lot($link, $data);
         header("Location: lot.php?id=" . $lot_id);
+
+        // Создание миниатюры изображения лота
+        $gd_module = 'php_gd2.dll';
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $gd_module = 'gd2.os';
+        }
+        if (extension_loaded('gd') || (!extension_loaded('gd')) && dl($gd_module)) {
+            $src = $file_dir . $file_name;
+            $dest =  $file_dir . 'tmb-' . $file_name;
+            $thumb_width = 54;
+            make_thumb($src, $dest, $thumb_width);
+        }
+
         exit();
     }
 }

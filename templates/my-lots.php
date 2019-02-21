@@ -17,7 +17,7 @@
         <tr class="rates__item<?=$rate_add_class; ?>">
             <td class="rates__info">
                 <div class="rates__img">
-                  <img src="<?=$lot_img_path . $bet['img']; ?>" width="54" height="40" alt="Изображение лота">
+                    <img src="<?=file_exists($lot_img_path . 'tmb-' . $bet['img']) ? $lot_img_path . 'tmb-' . $bet['img'] : $lot_img_path . $bet['img']; ?>" width="54" height="40" alt="Изображение лота">
                 </div>
                 <?php if ($bet['winner_id'] === $user['user_id']): ?>
                 <div>
