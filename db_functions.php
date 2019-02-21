@@ -291,6 +291,28 @@ function db_is_registered_email($link, $email) {
 }
 
 /**
+ * Возвращает массив данных пользователя по указанному e-mail
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param string $email E-mail адрес
+ * @return array Массив данных пользователя
+ */
+function db_get_user_by_email($link, $email) {
+    $result = [];
+    $sql =
+        "SELECT *
+            FROM users
+            WHERE email = '$email'";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
  * Выполняет запись новой строки в таблицу users базы данных на основе переданных данных и возвращает идентификатор этой строки
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
