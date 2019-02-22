@@ -135,6 +135,36 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
     return $records_count ? $result_count : $result_array;
 }
 
+function db_search_opened_lots($link, $limit, $search_text, $category_id = false, $page_id = false, $records_count = false) {
+    $result_array = [];
+    $result_count = 0;
+    $category_filter = empty($category_id) ? '' : 'c.category_id = ' . $category_id . ' AND';
+    $limit_filter = !empty($limit) ? 'LIMIT ' . $limit : '';
+    $offset_filter = !empty($page_id) && !empty($limit) ? 'OFFSET ' . ($page_id - 1) * $limit : '';
+    $sql =
+        "SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
+            FROM lots l
+            JOIN categories c USING (category_id)
+            LEFT JOIN bets b USING (lot_id)
+            WHERE l.expiry_date > NOW() AND $category_filter MATCH (title,description) AGAINST ('$search_text')
+            GROUP BY l.lot_id
+            ORDER BY l.adding_date DESC
+            $limit_filter
+            $offset_filter";
+    if ($query = mysqli_query($link, $sql)) {
+        if ($records_count) {
+            $result_count = mysqli_num_rows($query);
+        }
+        else {
+            $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
+        }
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $records_count ? $result_count : $result_array;
+}
+
 /**
  * Возвращает массив данных для указанного лота
  *

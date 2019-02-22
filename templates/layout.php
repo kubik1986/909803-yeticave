@@ -15,6 +15,9 @@
                 <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
             </a>
             <form class="main-header__search" method="get" action="search.php">
+                <?php if (!empty($current_category)): ?>
+                <input type="text" name="category" value=<?=$current_category['category_id']; ?> hidden>
+                <?php endif; ?>
                 <input type="search" name="search" placeholder="Поиск лота<?=empty($current_category) ? '' : ' в категории «' . $current_category['name'] . '»'; ?>">
                 <input class="main-header__search-btn" type="submit" name="find" value="Найти">
             </form>
