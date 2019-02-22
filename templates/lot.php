@@ -10,16 +10,7 @@
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state">
-                <?php
-                    $timer_add_class = '';
-                    if (is_lot_finishing($lot['expiry_date'])) {
-                        $timer_add_class = ' timer--finishing';
-                    }
-                    if (is_lot_closed($lot['expiry_date'])) {
-                        $timer_add_class = ' timer--end';
-                    }
-                ?>
-                <div class="lot-item__timer timer<?=$timer_add_class; ?>">
+                <div class="lot-item__timer timer<?=get_lots_timer_class($lot['expiry_date']); ?>">
                     <?=get_lot_expiry_time($lot['expiry_date']); ?>
                 </div>
                 <div class="lot-item__cost-state">

@@ -102,17 +102,23 @@ function get_lot_expiry_time($expiry_date) {
 }
 
 /**
- * Определяет, заканчивается ли время торгов по указанному лоту
+ * Возвращает CSS-класс таймера лота по указанной дате окончания аукциона
  *
  * @param string $expiry_date Дата окончания торгов по лоту
  * @param int $min_hours Количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
- * @return bool true - аукцион заканчивается, false - аукцион не заканчивается
+ * @return string CSS-класс таймера
  */
-function is_lot_finishing($expiry_date, $min_hours = 6) {
+function get_lots_timer_class($expiry_date, $min_hours = 6) {
     $expiry_time = strtotime($expiry_date);
     $seconds_to_expiry = $expiry_time - time();
     $total_hours_to_expiry = (int) floor($seconds_to_expiry / 3600);
-    return ($total_hours_to_expiry > 0 &&  $total_hours_to_expiry < $min_hours);
+    if (time() >= $expiry_time) {
+        return ' timer--end';
+    }
+    else if ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
+        return ' timer--finishing';
+    }
+    return '';
 }
 
 /**

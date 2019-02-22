@@ -31,20 +31,8 @@
             <td class="rates__category">
                 <?=$bet['category']; ?>
             </td>
-            <?php
-                $timer_add_class = '';
-                if (is_lot_finishing($bet['lot_expiry_date'])) {
-                    $timer_add_class = ' timer--finishing';
-                }
-                if (is_lot_closed($bet['lot_expiry_date'])) {
-                    $timer_add_class = ' timer--end';
-                }
-                if ($bet['winner_id'] === $user['user_id']) {
-                    $timer_add_class = ' timer--win';
-                }
-            ?>
             <td class="rates__timer">
-                <div class="timer<?=$timer_add_class; ?>"><?=$bet['winner_id'] === $user['user_id'] ? 'Ставка выиграла' : get_lot_expiry_time($bet['lot_expiry_date']); ?></div>
+                <div class="timer<?=$bet['winner_id'] === $user['user_id'] ? ' timer--win' : get_lots_timer_class($bet['lot_expiry_date']); ?>"><?=$bet['winner_id'] === $user['user_id'] ? 'Ставка выиграла' : get_lot_expiry_time($bet['lot_expiry_date']); ?></div>
             </td>
             <td class="rates__price">
                 <?=price_format($bet['amount'], false); ?> р
