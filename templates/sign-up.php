@@ -15,10 +15,10 @@
         <input id="name" type="text" name="name" placeholder="Введите имя" required<?=empty($data['name']) ? '' : ' value="' . $data['name'] . '"'; ?>>
         <span class="form__error"><?=!isset($errors['name']) ? '' : $errors['name']; ?></span>
     </div>
-    <div class="form__item<?=!isset($errors['message']) ? '' : ' form__item--invalid'; ?>">
-        <label for="message">Контактные данные*</label>
-        <textarea id="message" name="message" placeholder="Напишите как с вами связаться" required><?=empty($data['message']) ? '' : $data['message']; ?></textarea>
-        <span class="form__error"><?=!isset($errors['message']) ? '' : $errors['message']; ?></span>
+    <div class="form__item<?=!isset($errors['contacts']) ? '' : ' form__item--invalid'; ?>">
+        <label for="contacts">Контактные данные*</label>
+        <textarea id="contacts" name="contacts" placeholder="Напишите как с вами связаться" required><?=empty($data['contacts']) ? '' : $data['contacts']; ?></textarea>
+        <span class="form__error"><?=!isset($errors['contacts']) ? '' : $errors['contacts']; ?></span>
     </div>
     <div class="form__item form__item--file form__item--last<?=!isset($errors['avatar']) ? '' : ' form__item--invalid'; ?>">
         <label>Аватар</label>

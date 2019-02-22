@@ -364,23 +364,14 @@ function db_add_user($link, $data) {
     $user_id = '';
     $avatar_field = empty($data['file-name']) ? '' : ',avatar';
     $avatar_value = empty($data['file-name']) ? '' : ',?';
-    $stmt_data = [];
-    if (empty($data['file-name'])) {
-        $stmt_data = [
-            $data['name'],
-            $data['password'],
-            $data['email'],
-            $data['message']
-        ];
-    }
-    else {
-        $stmt_data = [
-            $data['name'],
-            $data['password'],
-            $data['email'],
-            $data['message'],
-            $data['file-name']
-        ];
+    $stmt_data = [
+        $data['name'],
+        $data['password'],
+        $data['email'],
+        $data['contacts']
+    ];
+    if (!empty($data['file-name'])) {
+        array_push($stmt_data, $data['file-name']);
     }
     $sql =
         "INSERT INTO users (name, password, email, contacts $avatar_field)

@@ -19,7 +19,7 @@ $data = [];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $keys = ['email', 'password', 'name', 'message'];
+    $keys = ['email', 'password', 'name', 'contacts'];
     $file_name = '';
 
     foreach ($keys as $key) {
@@ -50,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors['name']) && strlen($data['name']) > $name_max_length) {
         $errors['name'] = 'Имя слишком длинное. Максимальное количество символов - ' . $name_max_length;
     }
-    if (empty($errors['message']) && strlen($data['message']) > $contacts_max_length) {
-        $errors['message'] = 'Сообщение слишком длинное. Максимальное количество символов - ' . $contacts_max_length;
+    if (empty($errors['contacts']) && strlen($data['contacts']) > $contacts_max_length) {
+        $errors['contacts'] = 'Сообщение слишком длинное. Максимальное количество символов - ' . $contacts_max_length;
     }
 
     if (isset($_FILES['avatar']) && is_uploaded_file($_FILES['avatar']['tmp_name'])) {
@@ -71,10 +71,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(empty($errors)) {
-        $file_dir = $init_data['avatar_path'];
-        move_uploaded_file($_FILES['avatar']['tmp_name'], $file_dir . $file_name);
+        if(!empty($file_name)) {
+            $file_dir = $init_data['avatar_path'];
+            move_uploaded_file($_FILES['avatar']['tmp_name'], $file_dir . $file_name);
+            $data['file-name'] = $file_name;
+        }
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        $data['file-name'] = $file_name;
         $user_id = db_add_user($link, $data);
         header("Location: login.php");
         exit();
