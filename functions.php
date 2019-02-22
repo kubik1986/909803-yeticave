@@ -233,4 +233,40 @@ function make_thumb($src, $dest, $thumb_width) {
     $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
     imagedestroy($virtual_image);
 }
+
+/**
+ * Отрисовывает страницу ошибки по указанным http-коду и тексту ошибки
+ *
+ * @param string $http_code Код состояния http
+ * @param string $message Текст сообщения об ошибке
+ * @param array $init_data Массив данных из init.php для заполнения шаблона
+ * @param array $user Массив данных пользователя для заполнения шаблона
+ * @param array $categories Массив категорий для заполнения шаблона
+ * @return void
+ */
+function show_error($http_code, $message, $init_data, $user, $categories) {
+    $http_codes = [
+        '401' => ['title' => '401 - Требуется авторизация',
+                  'header' => 'HTTP/1.1 401 Unauthorized'],
+        '403' => ['title' => '403 - Доступ запрещен',
+                  'header' => 'HTTP/1.1 403 Forbidden'],
+        '404' => ['title' => '404 - Страница не найдена',
+                  'header' => 'HTTP/1.1 404  Not Found']
+    ];
+    $page_title = isset($http_codes[$http_code]) ? $http_codes[$http_code]['title'] : $http_codes['404']['title'];
+    $header = isset($http_codes[$http_code]) ? $http_codes[$http_code]['header'] : $http_codes['404']['header'];
+    $error = [
+        'title' => $page_title,
+        'message' => $message
+    ];
+    header($header);
+    $page_content = include_template('error.php', ['error' => $error]);
+    $layout_content = include_template('layout.php', array_merge($init_data, [
+        'title' => $error['title'],
+        'content' => $page_content,
+        'user' => $user,
+        'categories' => $categories
+    ]));
+    print($layout_content);
+}
 ?>

@@ -10,19 +10,7 @@ $lot_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $lot = !empty($lot_id) ? db_get_lot($link, $lot_id) : [];
 
 if (empty($lot)) {
-    $error = [
-        'title' => '404 - Страница не найдена',
-        'message' => 'Данной страницы не существует на сайте.'
-    ];
-    header("HTTP/1.0 404 Not Found");
-    $page_content = include_template('error.php', ['error' => $error]);
-    $layout_content = include_template('layout.php', array_merge($init_data, [
-        'title' => $error['title'],
-        'content' => $page_content,
-        'user' => $user,
-        'categories' => $categories
-    ]));
-    print($layout_content);
+    show_error('404', 'Данной страницы не существует на сайте.',  $init_data, $user, $categories);
     exit();
 }
 
@@ -64,27 +52,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         $data['user_id'] = $user['user_id'];
         $data['lot_id'] = $lot_id;
-        if (!is_lot_closed($lot['expiry_date'])) {
-            $bet_id = db_add_bet($link, $data);
-            header("Location: lot.php?id=" . $lot_id);
+        if (is_lot_closed($lot['expiry_date'])) {
+            show_error('403', 'Вы не можете сделать ставку, так как аукцион по этому лоту завершен.',  $init_data, $user, $categories);
             exit();
         }
-        else {
-            header("HTTP/1.0 403 Unauthorized");
-            $user_error = [
-                'title' => '403 - Доступ запрещен',
-                'message' => 'Вы не можете сделать ставку, так как аукцион по этому лоту завершен.'
-            ];
-            $page_content = include_template('error.php', ['error' => $user_error]);
-            $layout_content = include_template('layout.php', array_merge($init_data, [
-                'title' => $user_error['title'],
-                'content' => $page_content,
-                'user' => $user,
-                'categories' => $categories
-            ]));
-            print($layout_content);
-            exit();
-        }
+        $bet_id = db_add_bet($link, $data);
+        header("Location: lot.php?id=" . $lot_id);
+        exit();
     }
 }
 
