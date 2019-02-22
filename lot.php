@@ -57,8 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
         $bet_id = db_add_bet($link, $data);
-        header("Location: lot.php?id=" . $lot_id);
-        exit();
+
+        // Обновление данных перед отрисовкой страницы
+        $lot['price'] = $data['cost'];
+        array_unshift($bets, [
+            'adding_date' => date('Y-m-d H:i:s'),
+            'amount' => $data['cost'],
+            'user_id' => $user['user_id'],
+            'user' => $user['name']
+        ]);
     }
 }
 
