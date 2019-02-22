@@ -49,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(empty($errors) && !$is_auth_error) {
+        // TODO: открыть сессию, записать данные пользователя
 
         header("Location: /");
         exit();
@@ -61,7 +62,7 @@ $page_content = include_template('login.php', [
     'is_auth_error' => $is_auth_error
 ]);
 $layout_content = include_template('layout.php', array_merge($init_data, [
-    'title' => 'Регистрация',
+    'title' => 'Вход',
     'content' => $page_content,
     'user' => $user,
     'categories' => $categories
