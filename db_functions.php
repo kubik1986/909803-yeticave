@@ -135,6 +135,17 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
     return $records_count ? $result_count : $result_array;
 }
 
+/**
+ * Возвращает массив открытых лотов или количество открытых лотов как результат полнотекстового поиска
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int|bool $limit Количество лотов, отображаемое на странице
+ * @param string $search_text Текст поискового запроса
+ * @param int|bool $category_id ID категории лота
+ * @param int|bool $page_id ID страницы при постраничной навигации
+ * @param bool $records_count Параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
+ * @return array|int Массив открытых лотов|количество открытых лотов
+ */
 function db_search_opened_lots($link, $limit, $search_text, $category_id = false, $page_id = false, $records_count = false) {
     $result_array = [];
     $result_count = 0;
