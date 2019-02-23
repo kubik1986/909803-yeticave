@@ -27,8 +27,7 @@ if (isset($_GET['category'])) {
         $init_data['current_category'] = $category;
     }
     else {
-        header("Location: search.php?search=" . $search['text']);
-        exit();
+        $category_id = 0;
     }
 }
 
