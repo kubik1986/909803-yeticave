@@ -7,7 +7,7 @@ $init_data['is_main_page'] = true;
 $lots_limit = 3;
 
 // Количество открытых лотов
-$lots_count = db_get_opened_lots($link, false, false, false, true);
+$lots_count = db_get_opened_lots($link, false, false, false, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = (int) floor($lots_count / $lots_limit);
@@ -28,7 +28,7 @@ if (isset($_GET['page'])) {
 $pagination_data = get_pagination_data($pages_count, $page_id, [], 10);
 
 // Открытые лоты на текущей странице
-$lots = db_get_opened_lots($link, $lots_limit, false, $page_id);
+$lots = db_get_opened_lots($link, $lots_limit, false, false, $page_id);
 
 $lots_list = include_template('_lots-list.php', array_merge($init_data, [
     'lots' => $lots

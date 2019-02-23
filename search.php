@@ -32,7 +32,7 @@ if (isset($_GET['category'])) {
 }
 
 // Количество открытых лотов по результатам поиска
-$lots_count = db_search_opened_lots($link, false, $search['text'], $category_id, false, true);
+$lots_count = db_get_opened_lots($link, false, mysqli_real_escape_string($link, $search['text']), $category_id, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = (int) floor($lots_count / $lots_limit);
@@ -56,7 +56,7 @@ if (!empty($category_id)) {
 $pagination_data = get_pagination_data($pages_count, $page_id, $url_data, 10);
 
 // Лоты по результатам поиска в указанной категории и странице
-$lots = db_search_opened_lots($link, $lots_limit, $search['text'], $category_id, $page_id);
+$lots = db_get_opened_lots($link, $lots_limit, mysqli_real_escape_string($link, $search['text']), $category_id, $page_id);
 
 $lots_list = include_template('_lots-list.php', array_merge($init_data, [
     'lots' => $lots

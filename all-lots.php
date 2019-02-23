@@ -18,7 +18,7 @@ if (empty($current_category)) {
 $init_data['current_category'] = $current_category;
 
 // Количество открытых лотов в указанной категории
-$lots_count = db_get_opened_lots($link, false, $category_id, false, true);
+$lots_count = db_get_opened_lots($link, false, false, $category_id, false, true);
 
 // Число страниц для отображения лотов
 $pages_count = (int) floor($lots_count / $lots_limit);
@@ -36,7 +36,7 @@ if ($page_id <= 0  || $page_id > $pages_count) {
 $pagination_data = get_pagination_data($pages_count, $page_id, ['category' =>  $category_id], 10);
 
 // Лоты в указанной категории и странице
-$lots = db_get_opened_lots($link, $lots_limit, $category_id, $page_id);
+$lots = db_get_opened_lots($link, $lots_limit, false, $category_id, $page_id);
 
 $lots_list = include_template('_lots-list.php', array_merge($init_data, [
     'lots' => $lots
