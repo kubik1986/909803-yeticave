@@ -44,6 +44,7 @@ function num_format($num, $word) {
         'ставка' => ['ставка', 'ставки', 'ставок'],
         'минута' => ['минута', 'минуты', 'минут'],
         'час' => ['час', 'часа', 'часов'],
+        'день' => ['день', 'дня', 'дней'],
         'рубль' => ['рубль', 'рубля', 'рублей']
     ];
     $result = '';
@@ -69,94 +70,90 @@ function num_format($num, $word) {
 /**
  * Определяет, закончился ли аукцион по лоту
  *
- * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
+ * @param string $expiry_date Дата окончания торгов
  * @return bool true - аукцион закончился, false - аукцион не закончился
  */
 function is_lot_closed($expiry_date) {
-    $current_date = date_create('now');
-    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
-    date_time_set($expiry_date, 0, 0);
-    return $current_date >= $expiry_date;
+    return time() >= strtotime($expiry_date);
 }
 
 /**
  * Определяет время до окончания торгов по лоту
  *
- * @param string $expiry_date Дата окончания торгов в формате ГГГГ-ММ-ДД
+ * @param string $expiry_date Дата окончания торгов
  * @return string Время до окончания торгов
  */
 function get_lot_expiry_time($expiry_date) {
-    $current_date = date_create('now');
-    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
-    date_time_set($expiry_date, 0, 0);
-    if ($current_date >= $expiry_date) {
+    $expiry_time = strtotime($expiry_date);
+    $seconds_to_expiry = $expiry_time - time();
+    $days_to_expiry = (int) floor($seconds_to_expiry / 86400);
+    $hours_to_expiry = (int) floor(($seconds_to_expiry % 86400) / 3600);
+    $minutes_to_expiry = (int) floor(($seconds_to_expiry % 3600) / 60);
+    if ($seconds_to_expiry <= 0) {
         return 'Торги окончены';
     }
-    $diff = date_diff($expiry_date, $current_date);
-    $days_to_expiry = intval(date_interval_format($diff, '%a'));
     if ($days_to_expiry === 0) {
-        return date_interval_format($diff, '%H:%I');
+        return sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
     }
     elseif ($days_to_expiry <= 3) {
-        return $days_to_expiry . ($days_to_expiry > 1 ? ' дня' : ' день');
+        return sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'день'));
     }
-    return date_format($expiry_date, 'd.m.Y');
+    return date('d.m.Y', $expiry_time);
 }
 
 /**
- * Определяет, заканчивается ли время торгов по указанному лоту
+ * Возвращает CSS-класс таймера лота по указанной дате окончания аукциона
  *
- * @param string $expiry_date Дата окончания торгов по лоту в формате ГГГГ-ММ-ДД
+ * @param string $expiry_date Дата окончания торгов по лоту
  * @param int $min_hours Количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
- * @return bool true - аукцион заканчивается, false - аукцион не заканчивается
+ * @return string CSS-класс таймера
  */
-function is_lot_finishing($expiry_date, $min_hours = 6) {
-    $current_date = date_create('now');
-    $expiry_date = date_create_from_format('Y-m-d', $expiry_date);
-    date_time_set($expiry_date, 0, 0);
-    $diff = date_diff($current_date, $expiry_date);
-    $days_to_expiry = intval(date_interval_format($diff, '%a'));
-    if ($days_to_expiry > 0) {
-        return false;
+function get_lots_timer_class($expiry_date, $min_hours = 6) {
+    $expiry_time = strtotime($expiry_date);
+    $seconds_to_expiry = $expiry_time - time();
+    $total_hours_to_expiry = (int) floor($seconds_to_expiry / 3600);
+    if (time() >= $expiry_time) {
+        return ' timer--end';
     }
-    $hours_to_expiry = intval(date_interval_format($diff, '%r%h'));
-    return ($hours_to_expiry > 0 &&  $hours_to_expiry < $min_hours);
+    else if ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
+        return ' timer--finishing';
+    }
+    return '';
 }
 
 /**
  * Возвращает время, прошедшее с момента добавления ставки, или непосредственно время добавления ставки в удобочитаемом формате
  *
- * @param string $adding_date Время добавления ставки в формате ГГГГ-ММ-ДД ЧЧ:ММ:СС
+ * @param string $adding_time Дата и время добавления ставки
  * @return string Отформатированное время добавления ставки
  */
 function get_bet_add_time($adding_time) {
-    $current_date = date_create('now');
-    $adding_date = date_create($adding_time);
-    $diff = date_diff($current_date, $adding_date);
-    $days_passed = intval(date_interval_format($diff, '%a'));
+    $add_time = strtotime($adding_time);
+    if ($add_time > time()) {
+        return 'Ошибка! Время больше текущего';
+    }
+    $seconds_passed = time() - $add_time;
+    $days_passed = (int) floor($seconds_passed / 86400);
+    $hours_passed = (int) floor(($seconds_passed % 86400) / 3600);
+    $minutes_passed = (int) floor(($seconds_passed % 3600) / 60);
     if ($days_passed === 0) {
-        $hours_passed = intval(date_interval_format($diff, '%h'));
         if ($hours_passed === 0) {
-            $minutes_passed = intval(date_interval_format($diff, '%i'));
             if ($minutes_passed === 0) {
-                $seconds_passed = intval(date_interval_format($diff, '%s'));
                 return $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
             }
-            return $minutes_passed === 1 ? 'Минута назад' : $minutes_passed . ' ' . num_format($minutes_passed, 'минута') . ' назад';
+            return $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'минута'));
         }
-        elseif ($hours_passed > 0 && $hours_passed <= 5) {
-            return $hours_passed ===1 ? 'Час назад' : $hours_passed . ' ' . num_format($hours_passed, 'час') . ' назад';
+        elseif ($hours_passed > 0 && $hours_passed <= 10) {
+            return $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'час'));
         }
     }
-    $current_date_midnight = date_create('today');
-    $adding_date_midnight = date_create($adding_time);
-    date_time_set($adding_date_midnight, 0, 0);
-    $calendar_diff = date_diff($current_date_midnight, $adding_date_midnight);
-    $calendar_days_passed = intval(date_interval_format($calendar_diff, '%a'));
-    if ($calendar_days_passed <= 1) {
-        return  $calendar_days_passed === 0 ? date_format($adding_date, 'Сегодня в H:i') : date_format($adding_date, 'Вчера в H:i');
+    if ($add_time >= strtotime('today')) {
+        return sprintf('Сегодня в %s', date('H:i', $add_time));
     }
-    return date_format($adding_date, 'd.m.y в H:i');
+    elseif ($add_time >= strtotime('yesterday')) {
+        return sprintf('Вчера в %s', date('H:i', $add_time));
+    }
+    return date('d.m.y в H:i', $add_time);
 }
 
 /**
@@ -215,5 +212,67 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
     }
     $pagination_data[$max_pages + 1] = ['page_number' => 'Вперед', 'class' => ' pagination-item-next', 'href' => $next_href];
     return $pagination_data;
+}
+
+/**
+ * Создает миниатюру изображения
+ *
+ * @param string $src Полный путь к файлу исходного изображения
+ * @param string $dest Полный путь к файлу целевого изображения
+ * @param int thumb_width Ширина целевого изображения в px
+ * @return void
+ */
+function make_thumb($src, $dest, $thumb_width) {
+    $file_type = mime_content_type($src);
+    $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
+    $width = imagesx($source_image);
+    $height = imagesy($source_image);
+
+    $thumb_height = floor($height * ($thumb_width / $width));
+    $virtual_image = imagecreatetruecolor($thumb_width, $thumb_height);
+    if ($file_type === 'image/png') {
+        imageAlphaBlending($virtual_image, false);
+        imageSaveAlpha($virtual_image, true);
+    }
+
+    imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+    $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
+    imagedestroy($virtual_image);
+}
+
+/**
+ * Отрисовывает страницу ошибки по указанным http-коду и тексту ошибки
+ *
+ * @param string $http_code Код состояния http
+ * @param string $message Текст сообщения об ошибке
+ * @param array $init_data Массив данных из init.php для заполнения шаблона
+ * @param array $user Массив данных пользователя для заполнения шаблона
+ * @param array $categories Массив категорий для заполнения шаблона
+ * @return void
+ */
+function show_error($http_code, $message, $init_data, $user, $categories) {
+    $http_codes = [
+        '401' => ['title' => '401 - Требуется авторизация',
+                  'header' => 'HTTP/1.1 401 Unauthorized'],
+        '403' => ['title' => '403 - Доступ запрещен',
+                  'header' => 'HTTP/1.1 403 Forbidden'],
+        '404' => ['title' => '404 - Страница не найдена',
+                  'header' => 'HTTP/1.1 404  Not Found']
+    ];
+    $page_title = isset($http_codes[$http_code]) ? $http_codes[$http_code]['title'] : $http_codes['404']['title'];
+    $header = isset($http_codes[$http_code]) ? $http_codes[$http_code]['header'] : $http_codes['404']['header'];
+    $error = [
+        'title' => $page_title,
+        'message' => $message
+    ];
+    header($header);
+    $page_content = include_template('error.php', ['error' => $error]);
+    $layout_content = include_template('layout.php', array_merge($init_data, [
+        'title' => $error['title'],
+        'content' => $page_content,
+        'user' => $user,
+        'categories' => $categories
+    ]));
+    print($layout_content);
 }
 ?>

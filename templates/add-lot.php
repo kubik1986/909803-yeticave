@@ -24,6 +24,12 @@
     </div>
     <div class="form__item form__item--file<?=!isset($errors['photo']) ? '' : ' form__item--invalid'; ?>">
         <label>Изображение</label>
+        <div class="preview">
+            <button class="preview__remove" type="button">x</button>
+            <div class="preview__img">
+                <img src="img/lot-image.jpg" width="113" height="113" alt="Изображение лота">
+            </div>
+        </div>
         <div class="form__input-file">
             <input class="visually-hidden" id="photo2" type="file" name="photo">
             <label for="photo2">

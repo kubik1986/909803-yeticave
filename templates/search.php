@@ -1,6 +1,6 @@
 <div class="container">
     <section class="lots">
-        <h2>Все лоты в категории «<?=$current_category['name']; ?>»</h2>
+        <h2>Результаты поиска по запросу «<span><?=htmlspecialchars($search['text']); ?></span>»<?=empty($search['category']) ? '' : ' в категории «' . $search['category'] . '»'; ?></h2>
         <?=$lots_list; ?>
     </section>
     <?php if (!empty($pagination_data)): ?>

@@ -75,6 +75,27 @@ function db_get_categories($link) {
 }
 
 /**
+ * Возвращает массив данных для указанной категории
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @return array Массив данных указанной категории
+ */
+function db_get_category($link, $category_id) {
+    $result = [];
+    $sql =
+        "SELECT *
+            FROM categories
+            WHERE category_id = $category_id";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
  * Возвращает массив открытых лотов или количество открытых лотов
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
@@ -96,6 +117,47 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
             JOIN categories c USING (category_id)
             LEFT JOIN bets b USING (lot_id)
             WHERE l.expiry_date > NOW() $category_filter
+            GROUP BY l.lot_id
+            ORDER BY l.adding_date DESC
+            $limit_filter
+            $offset_filter";
+    if ($query = mysqli_query($link, $sql)) {
+        if ($records_count) {
+            $result_count = mysqli_num_rows($query);
+        }
+        else {
+            $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
+        }
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $records_count ? $result_count : $result_array;
+}
+
+/**
+ * Возвращает массив открытых лотов или количество открытых лотов как результат полнотекстового поиска
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int|bool $limit Количество лотов, отображаемое на странице
+ * @param string $search_text Текст поискового запроса
+ * @param int|bool $category_id ID категории лота
+ * @param int|bool $page_id ID страницы при постраничной навигации
+ * @param bool $records_count Параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
+ * @return array|int Массив открытых лотов|количество открытых лотов
+ */
+function db_search_opened_lots($link, $limit, $search_text, $category_id = false, $page_id = false, $records_count = false) {
+    $result_array = [];
+    $result_count = 0;
+    $category_filter = empty($category_id) ? '' : 'c.category_id = ' . $category_id . ' AND';
+    $limit_filter = !empty($limit) ? 'LIMIT ' . $limit : '';
+    $offset_filter = !empty($page_id) && !empty($limit) ? 'OFFSET ' . ($page_id - 1) * $limit : '';
+    $sql =
+        "SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
+            FROM lots l
+            JOIN categories c USING (category_id)
+            LEFT JOIN bets b USING (lot_id)
+            WHERE l.expiry_date > NOW() AND $category_filter MATCH (title,description) AGAINST ('$search_text')
             GROUP BY l.lot_id
             ORDER BY l.adding_date DESC
             $limit_filter
@@ -148,10 +210,10 @@ function db_get_bets($link, $lot_id) {
     $result = [];
     $sql =
         "SELECT adding_date, amount, b.user_id, u.name AS user
-          FROM bets b
-          JOIN users u USING (user_id)
-          WHERE lot_id = $lot_id
-          ORDER BY adding_date DESC";
+            FROM bets b
+            JOIN users u USING (user_id)
+            WHERE lot_id = $lot_id
+            ORDER BY adding_date DESC";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
     }
@@ -162,7 +224,34 @@ function db_get_bets($link, $lot_id) {
 }
 
 /**
- * Выполняет запись новой строки в таблицу лотов базы данных на основе переданных данных и возвращает идентификатор этой строки
+ * Возвращает массив ставок, которые сделал указанный пользователь
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int $user_id ID пользователя
+ * @return array Массив ставок указанного пользователя
+ */
+function db_get_user_bets($link, $user_id) {
+    $result = [];
+    $sql =
+        "SELECT l.lot_id, l.title AS lot_title, c.name AS category, l.expiry_date AS lot_expiry_date, MAX(amount) AS amount, MAX(b.adding_date) AS adding_date, l.winner_id, l.img, l.author_id AS lot_author_id, u.contacts AS lot_author_contacts
+            FROM bets b
+            JOIN lots l USING (lot_id)
+            JOIN users u USING (user_id)
+            JOIN categories c USING (category_id)
+            WHERE user_id = $user_id
+            GROUP BY l.lot_id, l.title, c.name, l.expiry_date, l.winner_id, l.img, l.author_id, u.contacts
+            ORDER BY adding_date DESC";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
+ * Выполняет запись новой строки в таблицу lots базы данных на основе переданных данных и возвращает идентификатор этой строки
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param array $data Массив данных для подготовленного выражения
@@ -172,7 +261,7 @@ function db_add_lot($link, $data) {
     $lot_id = '';
     $sql =
         "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = db_get_prepare_stmt($link, $sql, [
         $data['lot-name'],
         $data['message'],
@@ -191,5 +280,111 @@ function db_add_lot($link, $data) {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $lot_id;
+}
+
+/**
+ * Выполняет запись новой строки в таблицу bets базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_bet($link, $data) {
+    $bet_id = '';
+    $sql =
+        "INSERT INTO bets (amount, user_id, lot_id)
+            VALUES (?, ?, ?)";
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $data['cost'],
+        $data['user_id'],
+        $data['lot_id']
+    ]);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $bet_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $bet_id;
+}
+
+/**
+ * Определяет, существует ли запись в таблице users, у которой значение поля email совпадает с указанным
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param string $email E-mail адрес
+ * @return bool true - запись с указанным e-mail найдена, false - запись не найдена
+ */
+function db_is_registered_email($link, $email) {
+    $result = 0;
+    $sql =
+        "SELECT user_id
+            FROM users
+            WHERE email = '$email'";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_num_rows($query);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return !($result === 0);
+}
+
+/**
+ * Возвращает массив данных пользователя по указанному запросу
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param string $search_field Имя поля таблицы users, по которому будет производиться поиск
+ * @param string $value Значение поля
+ * @return array Массив данных пользователя
+ */
+function db_get_user($link, $search_field, $value) {
+    $result = [];
+    $sql =
+        "SELECT *
+            FROM users
+            WHERE $search_field = '$value'";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
+ * Выполняет запись новой строки в таблицу users базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_user($link, $data) {
+    $user_id = '';
+    $avatar_field = empty($data['file-name']) ? '' : ',avatar';
+    $avatar_value = empty($data['file-name']) ? '' : ',?';
+    $stmt_data = [
+        $data['name'],
+        $data['password'],
+        $data['email'],
+        $data['contacts']
+    ];
+    if (!empty($data['file-name'])) {
+        array_push($stmt_data, $data['file-name']);
+    }
+    $sql =
+        "INSERT INTO users (name, password, email, contacts $avatar_field)
+            VALUES (?, ?, ?, ? $avatar_value)";
+    $stmt = db_get_prepare_stmt($link, $sql, $stmt_data);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $user_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $user_id;
 }
 ?>

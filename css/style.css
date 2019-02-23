@@ -213,6 +213,12 @@ main.container {
 }
 
 .main-header__add-lot {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  -webkit-align-self: flex-start;
+  -ms-flex-item-align: start;
+  align-self: flex-start;
   max-width: 160px;
   margin-right: 30px;
 }
@@ -256,6 +262,9 @@ main.container {
 }
 
 .user-menu__image {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
   width: 40px;
   height: 40px;
   margin-right: 10px;
@@ -662,12 +671,15 @@ main.container {
 
 .timer {
   position: relative;
+  display: inline-block;
+  min-width: 82px;
   padding: 6px 8px 5px 25px;
   background-color: #879296;
   font-size: 13px;
   line-height: 18px;
   color: #ffffff;
   border-radius: 2px;
+  box-sizing: border-box;
 }
 
 .timer::before {
@@ -856,7 +868,6 @@ main.container {
 .form__error {
   display: none;
   font-size: 11px;
-  line-height: 16px;
   color: #f84646;
 }
 
@@ -1021,9 +1032,7 @@ input:invalid .form__error{
 }
 
 .lot-item__timer {
-  display: inline-block;
   margin-bottom: 19px;
-  box-sizing: border-box;
 }
 
 .lot-item__cost-state {
@@ -1195,6 +1204,9 @@ input:invalid .form__error{
 }
 
 .rates__img {
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
   width: 54px;
   height: 40px;
   margin-right: 8px;
@@ -1232,21 +1244,6 @@ input:invalid .form__error{
 
 .rates__timer {
   width: 198px;
-}
-
-.rates__timer .timer {
-  width: 82px;
-  box-sizing: border-box;
-}
-
-.rates__timer .timer--win {
-  width: 112px;
-  box-sizing: border-box;
-}
-
-.rates__timer .timer--end {
-  width: 107px;
-  box-sizing: border-box;
 }
 
 .rates__price {
