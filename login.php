@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['email'] = 'Некорректный формат адреса электронной почты';
         }
         else {
-            $user_data = db_get_user_by_email($link, mysqli_real_escape_string($link, $data['email']));
+            $user_data = db_get_user($link, 'email', mysqli_real_escape_string($link, $data['email']));
         }
     }
     if (empty($errors['password'])) {
@@ -49,8 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(empty($errors) && !$is_auth_error) {
-        // TODO: открыть сессию, записать данные пользователя
-
+        $_SESSION['user'] = $user;
         header("Location: /");
         exit();
     }

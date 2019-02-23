@@ -31,7 +31,7 @@
                     <div class="user-menu__logged">
                         <p><?=htmlspecialchars($user['name']); ?></p>
                         <a href="my-lots.php">Мои ставки</a>
-                        <a href="#">Выйти</a>
+                        <a href="logout.php">Выйти</a>
                     </div>
                 <?php else: ?>
                     <ul class="user-menu__list">

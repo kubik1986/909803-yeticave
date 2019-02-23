@@ -3,6 +3,10 @@ require_once('config/config.php');
 require_once('db_functions.php');
 require_once('functions.php');
 
+// Старт сессии
+session_start();
+$user = isset($_SESSION['user']) ? $_SESSION['user'] : [];
+
 // Подключение к БД
 require_once('config/db.php');
 $link = db_connect($db);
@@ -22,11 +26,4 @@ $init_data = [
 
 // Категории
 $categories = db_get_categories($link);
-
-// Пользователь
-$user = [
-    'user_id' => '3',
-    'name' => 'Василий',
-    'avatar' => 'user-3-avatar.jpg'
-];
 ?>

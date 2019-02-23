@@ -332,18 +332,19 @@ function db_is_registered_email($link, $email) {
 }
 
 /**
- * Возвращает массив данных пользователя по указанному e-mail
+ * Возвращает массив данных пользователя по указанному запросу
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @param string $email E-mail адрес
+ * @param string $search_field Имя поля таблицы users, по которому будет производиться поиск
+ * @param string $value Значение поля
  * @return array Массив данных пользователя
  */
-function db_get_user_by_email($link, $email) {
+function db_get_user($link, $search_field, $value) {
     $result = [];
     $sql =
         "SELECT *
             FROM users
-            WHERE email = '$email'";
+            WHERE $search_field = '$value'";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
