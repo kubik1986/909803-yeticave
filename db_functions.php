@@ -278,21 +278,24 @@ function db_is_registered_email($link, $email) {
 }
 
 /**
- * Возвращает массив данных пользователя по указанному запросу
+ * Возвращает массив данных пользователя
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @param string $search_field Имя поля таблицы users, по которому будет производиться поиск
- * @param string $value Значение поля
+ * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
  * @return array Массив данных пользователя
  */
-function db_get_user($link, $search_field, $value) {
+function db_get_users($link, $where = []) {
     $result = [];
+    $sql_where = '';
+    if (!empty($where)) {
+        $sql_where = "WHERE " . key($where) . "='" . current($where) . "'";
+    }
     $sql =
         "SELECT *
             FROM users
-            WHERE $search_field = '$value'";
+            $sql_where";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+        $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
