@@ -21,7 +21,7 @@ $category_id = 0;
 $search['text'] = trim($_GET['search']);
 if (isset($_GET['category'])) {
     $category_id = intval($_GET['category']);
-    $category = db_get_category($link, $category_id);
+    $category = db_get_categories($link, ['category_id' => $category_id]);
     if (!empty($category)) {
         $search['category'] = $category['name'];
         $init_data['current_category'] = $category;
@@ -43,8 +43,7 @@ if ($lots_count === 0 || $lots_count % $lots_limit !== 0) {
 // ID страницы при постраничной навигации
 $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page_id <= 0  || $page_id > $pages_count) {
-    header("Location: search.php?category=" . $category_id . "&search=" . $search['text']);
-    exit();
+    $page_id = 1;
 }
 
 // Данные из строки запроса

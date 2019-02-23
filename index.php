@@ -18,8 +18,7 @@ if ($lots_count === 0 || $lots_count % $lots_limit !== 0) {
 // ID страницы при постраничной навигации
 $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page_id <= 0  || $page_id > $pages_count) {
-    header("Location: /");
-    exit();
+    $page_id = 1;
 }
 if (isset($_GET['page'])) {
     $init_data['is_main_page'] = false;

@@ -55,39 +55,24 @@ function db_connect($db) {
 }
 
 /**
- * Возвращает массив категорий
+ * Возвращает массив категорий или массив данных указанной категории
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @return array Массив категорий
+ * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
+ * @return array Массив категорий или массив данных указанной категории
  */
-function db_get_categories($link) {
+function db_get_categories($link, $where=[]) {
     $result = [];
-    $sql =
-        "SELECT *
-            FROM categories";
-    if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    $sql_where = '';
+    if (!empty($where)) {
+        $sql_where = "WHERE " . key($where) . "='" . current($where) . "'";
     }
-    else {
-        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
-    }
-    return $result;
-}
-
-/**
- * Возвращает массив данных для указанной категории
- *
- * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @return array Массив данных указанной категории
- */
-function db_get_category($link, $category_id) {
-    $result = [];
     $sql =
         "SELECT *
             FROM categories
-            WHERE category_id = $category_id";
+            $sql_where";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+        $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');

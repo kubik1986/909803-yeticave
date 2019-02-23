@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors['lot-name']) && strlen($data['lot-name']) > $title_max_length) {
         $errors['lot-name'] = 'Наименование лота слишком длинное. Максимальное количество символов - ' . $title_max_length;
     }
-    if (empty($errors['category']) && empty(db_get_category($link, $data['category']))) {
+    if (empty($errors['category']) && empty(db_get_categories($link, ['category_id' => mysqli_real_escape_string($link, $data['category'])]))) {
         $errors['category'] = 'Выберите категорию';
         $data['category'] = '';
     }
