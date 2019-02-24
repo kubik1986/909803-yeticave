@@ -55,39 +55,24 @@ function db_connect($db) {
 }
 
 /**
- * Возвращает массив категорий
+ * Возвращает массив категорий или массив данных указанной категории
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @return array Массив категорий
+ * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
+ * @return array Массив категорий или массив данных указанной категории
  */
-function db_get_categories($link) {
+function db_get_categories($link, $where=[]) {
     $result = [];
-    $sql =
-        "SELECT *
-            FROM categories";
-    if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    $sql_where = '';
+    if (!empty($where)) {
+        $sql_where = "WHERE " . key($where) . "='" . current($where) . "'";
     }
-    else {
-        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
-    }
-    return $result;
-}
-
-/**
- * Возвращает массив данных для указанной категории
- *
- * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @return array Массив данных указанной категории
- */
-function db_get_category($link, $category_id) {
-    $result = [];
     $sql =
         "SELECT *
             FROM categories
-            WHERE category_id = $category_id";
+            $sql_where";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+        $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
@@ -100,15 +85,17 @@ function db_get_category($link, $category_id) {
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @param int|bool $limit Количество лотов, отображаемое на странице
+ * @param string|bool $search_text Текст запроса полнотекстового поиска
  * @param int|bool $category_id ID категории лота
  * @param int|bool $page_id ID страницы при постраничной навигации
  * @param bool $records_count Параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
  * @return array|int Массив открытых лотов|количество открытых лотов
  */
-function db_get_opened_lots($link, $limit, $category_id = false, $page_id = false, $records_count = false) {
+function db_get_opened_lots($link, $limit, $search_text = false, $category_id = false, $page_id = false, $records_count = false) {
     $result_array = [];
     $result_count = 0;
-    $category_filter = !empty($category_id) ? 'AND c.category_id = ' . $category_id : '';
+    $category_filter = empty($category_id) ? '' : 'AND c.category_id = ' . $category_id;
+    $search_text_filter = empty($search_text) ? '' : "AND MATCH (title,description) AGAINST ('" . $search_text . "')";
     $limit_filter = !empty($limit) ? 'LIMIT ' . $limit : '';
     $offset_filter = !empty($page_id) && !empty($limit) ? 'OFFSET ' . ($page_id - 1) * $limit : '';
     $sql =
@@ -116,7 +103,7 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
             FROM lots l
             JOIN categories c USING (category_id)
             LEFT JOIN bets b USING (lot_id)
-            WHERE l.expiry_date > NOW() $category_filter
+            WHERE l.expiry_date > NOW() $category_filter $search_text_filter
             GROUP BY l.lot_id
             ORDER BY l.adding_date DESC
             $limit_filter
@@ -136,44 +123,24 @@ function db_get_opened_lots($link, $limit, $category_id = false, $page_id = fals
 }
 
 /**
- * Возвращает массив открытых лотов или количество открытых лотов как результат полнотекстового поиска
+ * Возвращает массив заверешенных лотов, у которых не определен победитель
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @param int|bool $limit Количество лотов, отображаемое на странице
- * @param string $search_text Текст поискового запроса
- * @param int|bool $category_id ID категории лота
- * @param int|bool $page_id ID страницы при постраничной навигации
- * @param bool $records_count Параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
- * @return array|int Массив открытых лотов|количество открытых лотов
+ * @return array Массив лотов без победителя
  */
-function db_search_opened_lots($link, $limit, $search_text, $category_id = false, $page_id = false, $records_count = false) {
-    $result_array = [];
-    $result_count = 0;
-    $category_filter = empty($category_id) ? '' : 'c.category_id = ' . $category_id . ' AND';
-    $limit_filter = !empty($limit) ? 'LIMIT ' . $limit : '';
-    $offset_filter = !empty($page_id) && !empty($limit) ? 'OFFSET ' . ($page_id - 1) * $limit : '';
+function db_get_closed_lots_without_winner($link) {
+    $result = [];
     $sql =
-        "SELECT lot_id, title, starting_price, img, COUNT(b.bet_id) AS bets_count, COALESCE(MAX(b.amount),starting_price) AS price, expiry_date, c.name AS category
-            FROM lots l
-            JOIN categories c USING (category_id)
-            LEFT JOIN bets b USING (lot_id)
-            WHERE l.expiry_date > NOW() AND $category_filter MATCH (title,description) AGAINST ('$search_text')
-            GROUP BY l.lot_id
-            ORDER BY l.adding_date DESC
-            $limit_filter
-            $offset_filter";
+        "SELECT lot_id, title, author_id
+            FROM lots
+            WHERE expiry_date <= NOW() AND winner_id IS NULL";
     if ($query = mysqli_query($link, $sql)) {
-        if ($records_count) {
-            $result_count = mysqli_num_rows($query);
-        }
-        else {
-            $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
-        }
+        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
-    return $records_count ? $result_count : $result_array;
+    return $result;
 }
 
 /**
@@ -197,6 +164,56 @@ function db_get_lot($link, $lot_id) {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
+}
+
+/**
+ * Выполняет запись новой строки в таблицу lots базы данных на основе переданных данных и возвращает идентификатор этой строки
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param array $data Массив данных для подготовленного выражения
+ * @return string Идентификатор записанной строки
+ */
+function db_add_lot($link, $data) {
+    $lot_id = '';
+    $sql =
+        "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = db_get_prepare_stmt($link, $sql, [
+        $data['lot-name'],
+        $data['message'],
+        $data['file-name'],
+        $data['lot-rate'],
+        $data['lot-date'],
+        $data['lot-step'],
+        $data['category'],
+        $data['author']
+    ]);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $lot_id = mysqli_insert_id($link);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $lot_id;
+}
+
+/**
+ * Обновляет запись в таблице lots путем добавления в полe winner_id значения идентификатора победителя аукциона по указанному лоту
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int $lot_id ID лота
+ * @param int $winner_id ID победителя аукциона
+ * @return void
+ */
+function db_update_lot_winner($link, $lot_id, $winner_id) {
+    $sql =
+        "UPDATE lots
+            SET winner_id = $winner_id
+            WHERE lot_id = $lot_id";
+    if (!$query = mysqli_query($link, $sql)) {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
 }
 
 /**
@@ -251,38 +268,6 @@ function db_get_user_bets($link, $user_id) {
 }
 
 /**
- * Выполняет запись новой строки в таблицу lots базы данных на основе переданных данных и возвращает идентификатор этой строки
- *
- * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @param array $data Массив данных для подготовленного выражения
- * @return string Идентификатор записанной строки
- */
-function db_add_lot($link, $data) {
-    $lot_id = '';
-    $sql =
-        "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = db_get_prepare_stmt($link, $sql, [
-        $data['lot-name'],
-        $data['message'],
-        $data['file-name'],
-        $data['lot-rate'],
-        $data['lot-date'],
-        $data['lot-step'],
-        $data['category'],
-        $data['author']
-    ]);
-    $result = mysqli_stmt_execute($stmt);
-    if ($result) {
-        $lot_id = mysqli_insert_id($link);
-    }
-    else {
-        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
-    }
-    return $lot_id;
-}
-
-/**
  * Выполняет запись новой строки в таблицу bets базы данных на основе переданных данных и возвращает идентификатор этой строки
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
@@ -332,21 +317,24 @@ function db_is_registered_email($link, $email) {
 }
 
 /**
- * Возвращает массив данных пользователя по указанному запросу
+ * Возвращает массив данных пользователя
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
- * @param string $search_field Имя поля таблицы users, по которому будет производиться поиск
- * @param string $value Значение поля
+ * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
  * @return array Массив данных пользователя
  */
-function db_get_user($link, $search_field, $value) {
+function db_get_users($link, $where = []) {
     $result = [];
+    $sql_where = '';
+    if (!empty($where)) {
+        $sql_where = "WHERE " . key($where) . "='" . current($where) . "'";
+    }
     $sql =
         "SELECT *
             FROM users
-            WHERE $search_field = '$value'";
+            $sql_where";
     if ($query = mysqli_query($link, $sql)) {
-        $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
+        $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
     }
     else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');

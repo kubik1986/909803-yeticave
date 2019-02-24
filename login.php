@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['email'] = 'Некорректный формат адреса электронной почты';
         }
         else {
-            $user_data = db_get_user($link, 'email', mysqli_real_escape_string($link, $data['email']));
+            $user_data = db_get_users($link, ['email' => mysqli_real_escape_string($link, $data['email'])]);
         }
     }
     if (empty($errors['password'])) {
