@@ -123,6 +123,27 @@ function db_get_opened_lots($link, $limit, $search_text = false, $category_id = 
 }
 
 /**
+ * Возвращает массив заверешенных лотов, у которых не определен победитель
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @return array Массив лотов без победителя
+ */
+function db_get_closed_lots_without_winner($link) {
+    $result = [];
+    $sql =
+        "SELECT lot_id, title, author_id
+            FROM lots
+            WHERE expiry_date <= NOW() AND winner_id IS NULL";
+    if ($query = mysqli_query($link, $sql)) {
+        $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
+    }
+    else {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
+    return $result;
+}
+
+/**
  * Возвращает массив данных для указанного лота
  *
  * @param mysqli $link Идентификатор подключения к серверу MySQL
@@ -175,6 +196,24 @@ function db_add_lot($link, $data) {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $lot_id;
+}
+
+/**
+ * Обновляет запись в таблице lots путем добавления в полe winner_id значения идентификатора победителя аукциона по указанному лоту
+ *
+ * @param mysqli $link Идентификатор подключения к серверу MySQL
+ * @param int $lot_id ID лота
+ * @param int $winner_id ID победителя аукциона
+ * @return void
+ */
+function db_update_lot_winner($link, $lot_id, $winner_id) {
+    $sql =
+        "UPDATE lots
+            SET winner_id = $winner_id
+            WHERE lot_id = $lot_id";
+    if (!$query = mysqli_query($link, $sql)) {
+        exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
+    }
 }
 
 /**
