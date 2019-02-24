@@ -11,7 +11,12 @@ $search = [
 ];
 
 if (!isset($_GET['search']) || empty(trim($_GET['search']))) {
-    header("Location: /");
+    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME'])) {
+        header("Location: " . $_SERVER['HTTP_REFERER']);
+    }
+    else {
+        header("Location: /");
+    }
     exit();
 }
 
