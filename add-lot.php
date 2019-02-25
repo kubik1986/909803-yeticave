@@ -97,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['author'] = $user['user_id'];
         $data['file-name'] = $file_name;
         $lot_id = db_add_lot($link, $data);
-        header("Location: lot.php?id=" . $lot_id);
 
         // Создание миниатюры изображения лота
         $lot_image = $file_dir . $file_name;
@@ -105,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $thumb_width = 54;
         make_thumb($lot_image, $thumb_image, $thumb_width);
 
+        header("Location: lot.php?id=" . $lot_id);
         exit();
     }
 }
