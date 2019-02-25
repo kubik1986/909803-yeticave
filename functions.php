@@ -239,30 +239,42 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
  * @param string $src Полный путь к файлу исходного изображения
  * @param string $dest Полный путь к файлу целевого изображения
  * @param int thumb_width Ширина целевого изображения в px
- * @return void
+ * @return bool true - миниатюра создана, false - миниатюра не создана.
  */
 function make_thumb($src, $dest, $thumb_width) {
-    $file_type = mime_content_type($src);
-    $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
-    $width = imagesx($source_image);
-    $height = imagesy($source_image);
-
-    $create = 'imagecreatetruecolor';
-    $copy = 'imagecopyresampled';
-    if (!function_exists('imagecreatetruecolor')) {
-        $create = 'imagecreate';
-        $copy = 'imagecopyresized';
+    $result = false;
+    $gd_module = 'php_gd2.dll';
+    if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        $gd_module = 'gd2.os';
     }
-    $thumb_height = floor($height * ($thumb_width / $width));
-    $virtual_image = $create($thumb_width, $thumb_height);
-    if ($file_type === 'image/png') {
-        imageAlphaBlending($virtual_image, false);
-        imageSaveAlpha($virtual_image, true);
-    }
+    if (extension_loaded('gd') || (!extension_loaded('gd') && dl($gd_module))) {
+        $file_type = mime_content_type($src);
+        $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
+        $width = imagesx($source_image);
+        $height = imagesy($source_image);
 
-    $copy($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
-    $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
-    imagedestroy($virtual_image);
+        $create = 'imagecreatetruecolor';
+        $copy = 'imagecopyresampled';
+        if (!function_exists('imagecreatetruecolor')) {
+            $create = 'imagecreate';
+            $copy = 'imagecopyresized';
+        }
+        $thumb_height = floor($height * ($thumb_width / $width));
+        $virtual_image = $create($thumb_width, $thumb_height);
+        if ($file_type === 'image/png') {
+            imageAlphaBlending($virtual_image, false);
+            imageSaveAlpha($virtual_image, true);
+        }
+
+        $copy($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+        $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
+        imagedestroy($virtual_image);
+        if (file_exists($dest)) {
+            $result = true;
+
+        }
+    }
+    return $result;
 }
 
 /**
