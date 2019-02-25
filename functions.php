@@ -247,14 +247,20 @@ function make_thumb($src, $dest, $thumb_width) {
     $width = imagesx($source_image);
     $height = imagesy($source_image);
 
+    $create = 'imagecreatetruecolor';
+    $copy = 'imagecopyresampled';
+    if (!function_exists('imagecreatetruecolor')) {
+        $create = 'imagecreate';
+        $copy = 'imagecopyresized';
+    }
     $thumb_height = floor($height * ($thumb_width / $width));
-    $virtual_image = imagecreatetruecolor($thumb_width, $thumb_height);
+    $virtual_image = $create($thumb_width, $thumb_height);
     if ($file_type === 'image/png') {
         imageAlphaBlending($virtual_image, false);
         imageSaveAlpha($virtual_image, true);
     }
 
-    imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+    $copy($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
     $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
     imagedestroy($virtual_image);
 }
