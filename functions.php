@@ -109,16 +109,35 @@ function get_lot_expiry_time($expiry_date) {
  * @return string CSS-класс таймера
  */
 function get_lots_timer_class($expiry_date, $min_hours = 6) {
+    $lots_timer_class = '';
     $expiry_time = strtotime($expiry_date);
     $seconds_to_expiry = $expiry_time - time();
     $total_hours_to_expiry = (int) floor($seconds_to_expiry / 3600);
     if (time() >= $expiry_time) {
-        return ' timer--end';
+        $lots_timer_class = ' timer--end';
     }
     else if ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
-        return ' timer--finishing';
+        $lots_timer_class = ' timer--finishing';
     }
-    return '';
+    return $lots_timer_class;
+}
+
+/**
+ * Возвращает CSS-класс элемента (строки) таблицы ставок пользователя
+ *
+ * @param array $bet Массив данных ставки
+ * @param array $user Массив данных пользователя
+ * @return string CSS-класс строки таблицы ставок
+ */
+function get_rates_item_class($bet, $user) {
+    $rate_item_class = '';
+    if ($bet['winner_id'] === $user['user_id']) {
+        $rate_item_class = ' rates__item--win';
+    }
+    elseif (is_lot_closed($bet['lot_expiry_date'])) {
+        $rate_item_class = ' rates__item--end';
+    }
+    return $rate_item_class;
 }
 
 /**

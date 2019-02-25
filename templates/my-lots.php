@@ -5,16 +5,7 @@
     <?php else: ?>
     <table class="rates__list">
         <?php foreach ($bets as $bet): ?>
-        <?php
-            $rate_add_class = '';
-            if (is_lot_closed($bet['lot_expiry_date'])) {
-                $rate_add_class = ' rates__item--end';
-            }
-            if ($bet['winner_id'] === $user['user_id']) {
-                $rate_add_class = ' rates__item--win';
-            }
-        ?>
-        <tr class="rates__item<?=$rate_add_class; ?>">
+        <tr class="rates__item<?=get_rates_item_class($bet, $user); ?>">
             <td class="rates__info">
                 <div class="rates__img">
                     <img src="<?=file_exists($lot_img_path . 'tmb-' . $bet['img']) ? $lot_img_path . 'tmb-' . $bet['img'] : $lot_img_path . $bet['img']; ?>" width="54" height="40" alt="Изображение лота">
