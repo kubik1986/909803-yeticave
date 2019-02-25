@@ -1,5 +1,5 @@
 <?php
-require_once('init.php');
+require_once('vendor/autoload.php');
 
 $lots = db_get_closed_lots_without_winner($link);
 if(!empty($lots)) {

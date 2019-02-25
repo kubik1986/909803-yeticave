@@ -1,0 +1,15 @@
+{
+    "name": "kubik1986/909803-yeticave",
+    "description": "Online auction of snowboarding and ski equipment",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Viacheslav Akulov",
+            "email": "sentence@ngs.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.1"
+    }
+}
