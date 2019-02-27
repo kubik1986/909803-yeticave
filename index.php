@@ -4,7 +4,7 @@ require_once('init.php');
 $init_data['is_main_page'] = true;
 
 // Количество лотов, выводимых на страницу
-$lots_limit = 3;
+$lots_limit = $config['main_page_lots_limit'];
 
 // Количество открытых лотов
 $lots_count = db_get_opened_lots($link, false, false, false, false, true);

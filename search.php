@@ -2,7 +2,7 @@
 require_once('init.php');
 
 // Количество лотов, выводимых на страницу
-$lots_limit = 9;
+$lots_limit = $config['search_page_lots_limit'];
 
 // Массив данных для поиска
 $search = [
