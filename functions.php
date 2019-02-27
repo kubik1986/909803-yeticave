@@ -89,16 +89,17 @@ function get_lot_expiry_time($expiry_date) {
     $days_to_expiry = (int) floor($seconds_to_expiry / 86400);
     $hours_to_expiry = (int) floor(($seconds_to_expiry % 86400) / 3600);
     $minutes_to_expiry = (int) floor(($seconds_to_expiry % 3600) / 60);
+    $result = date('d.m.Y', $expiry_time);
     if ($seconds_to_expiry <= 0) {
-        return 'Торги окончены';
+        $result = 'Торги окончены';
     }
-    if ($days_to_expiry === 0) {
-        return sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
+    elseif ($days_to_expiry === 0) {
+        $result = sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
     }
     elseif ($days_to_expiry <= 3) {
-        return sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'day'));
+        $result = sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'day'));
     }
-    return date('d.m.Y', $expiry_time);
+    return $result;
 }
 
 /**
@@ -148,6 +149,7 @@ function get_rates_item_class($bet, $user) {
  */
 function get_bet_add_time($adding_time) {
     $add_time = strtotime($adding_time);
+    $result = date('d.m.y в H:i', $add_time);
     if ($add_time > time()) {
         return 'Ошибка! Время больше текущего';
     }
@@ -155,24 +157,24 @@ function get_bet_add_time($adding_time) {
     $days_passed = (int) floor($seconds_passed / 86400);
     $hours_passed = (int) floor(($seconds_passed % 86400) / 3600);
     $minutes_passed = (int) floor(($seconds_passed % 3600) / 60);
-    if ($days_passed === 0) {
-        if ($hours_passed === 0) {
-            if ($minutes_passed === 0) {
-                return $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
-            }
-            return $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'minute'));
-        }
-        elseif ($hours_passed > 0 && $hours_passed <= 10) {
-            return $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'hour'));
-        }
+    if ($add_time >= strtotime('yesterday')) {
+        $result = sprintf('Вчера в %s', date('H:i', $add_time));
     }
     if ($add_time >= strtotime('today')) {
-        return sprintf('Сегодня в %s', date('H:i', $add_time));
+        $result = sprintf('Сегодня в %s', date('H:i', $add_time));
     }
-    elseif ($add_time >= strtotime('yesterday')) {
-        return sprintf('Вчера в %s', date('H:i', $add_time));
+    if ($days_passed === 0) {
+        if ($hours_passed === 0 && $minutes_passed === 0) {
+            $result = $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
+        }
+        elseif ($hours_passed === 0) {
+            $result = $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'minute'));
+        }
+        elseif ($hours_passed > 0 && $hours_passed <= 10) {
+            $result = $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'hour'));
+        }
     }
-    return date('d.m.y в H:i', $add_time);
+    return $result;
 }
 
 /**
