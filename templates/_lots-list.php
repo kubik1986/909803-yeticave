@@ -1,5 +1,5 @@
 <?php if (empty($lots)): ?>
-<p>Активные лоты не найдены.</p>
+<p><?=$not_found_message; ?></p>
 <?php else: ?>
 <ul class="lots__list">
     <?php foreach ($lots as $lot): ?>
