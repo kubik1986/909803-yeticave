@@ -24,11 +24,11 @@ $data = [];
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (empty($user) ||
-    $user['user_id'] === $lot['author_id'] ||
-    (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
-        header("Location: lot.php?id=" . $lot_id);
-        exit();
+    if (empty($user)
+        || $user['user_id'] === $lot['author_id']
+        || (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
+            header("Location: lot.php?id=" . $lot_id);
+            exit();
     }
 
     if (isset($_POST['cost']) && !empty(trim($_POST['cost']))) {
