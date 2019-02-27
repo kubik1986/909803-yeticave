@@ -41,11 +41,11 @@ function price_format($price, $ruble_sign = true) {
  */
 function num_format($num, $word) {
     $words = [
-        'ставка' => ['ставка', 'ставки', 'ставок'],
-        'минута' => ['минута', 'минуты', 'минут'],
-        'час' => ['час', 'часа', 'часов'],
-        'день' => ['день', 'дня', 'дней'],
-        'рубль' => ['рубль', 'рубля', 'рублей']
+        'bet' => ['ставка', 'ставки', 'ставок'],
+        'minute' => ['минута', 'минуты', 'минут'],
+        'hour' => ['час', 'часа', 'часов'],
+        'day' => ['день', 'дня', 'дней'],
+        'ruble' => ['рубль', 'рубля', 'рублей']
     ];
     $result = '';
     if (!isset($words[$word])) {
@@ -96,7 +96,7 @@ function get_lot_expiry_time($expiry_date) {
         return sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
     }
     elseif ($days_to_expiry <= 3) {
-        return sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'день'));
+        return sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'day'));
     }
     return date('d.m.Y', $expiry_time);
 }
@@ -160,10 +160,10 @@ function get_bet_add_time($adding_time) {
             if ($minutes_passed === 0) {
                 return $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
             }
-            return $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'минута'));
+            return $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'minute'));
         }
         elseif ($hours_passed > 0 && $hours_passed <= 10) {
-            return $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'час'));
+            return $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'hour'));
         }
     }
     if ($add_time >= strtotime('today')) {
