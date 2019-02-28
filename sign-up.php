@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['contacts'] = 'Сообщение слишком длинное. Максимальное количество символов - ' . $contacts_max_length;
     }
 
-    if (isset($_FILES['avatar']) && is_uploaded_file($_FILES['avatar']['tmp_name'])) {
+    if (is_uploaded_file($_FILES['avatar']['tmp_name'])) {
         $tmp_name = $_FILES['avatar']['tmp_name'];
         $file_size = $_FILES['avatar']['size'];
         $file_type = mime_content_type($tmp_name);

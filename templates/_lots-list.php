@@ -1,5 +1,5 @@
 <?php if (empty($lots)): ?>
-<p>Активные лоты не найдены.</p>
+<p><?=$not_found_message; ?></p>
 <?php else: ?>
 <ul class="lots__list">
     <?php foreach ($lots as $lot): ?>
@@ -16,7 +16,7 @@
                     <span class="lot__amount">Стартовая цена</span>
                     <span class="lot__cost"><?=price_format($lot['starting_price']); ?></span>
                     <?php else: ?>
-                    <span class="lot__amount"><?=$lot['bets_count']; ?> <?=num_format($lot['bets_count'], 'ставка'); ?></span>
+                    <span class="lot__amount"><?=$lot['bets_count']; ?> <?=num_format($lot['bets_count'], 'bet'); ?></span>
                     <span class="lot__cost"><?=price_format($lot['price']); ?></span>
                     <?php endif; ?>
                 </div>

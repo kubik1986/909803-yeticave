@@ -2,7 +2,7 @@
 require_once('init.php');
 
 // Количество лотов, выводимых на страницу
-$lots_limit = 9;
+$lots_limit = $config['search_page_lots_limit'];
 
 // Массив данных для поиска
 $search = [
@@ -40,10 +40,7 @@ if (isset($_GET['category'])) {
 $lots_count = db_get_opened_lots($link, false, mysqli_real_escape_string($link, $search['text']), $category_id, false, true);
 
 // Число страниц для отображения лотов
-$pages_count = (int) floor($lots_count / $lots_limit);
-if ($lots_count === 0 || $lots_count % $lots_limit !== 0) {
-    $pages_count++;
-}
+$pages_count = (int) ceil($lots_count / $lots_limit);
 
 // ID страницы при постраничной навигации
 $page_id = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -64,7 +61,8 @@ $pagination_data = get_pagination_data($pages_count, $page_id, $url_data, 10);
 $lots = db_get_opened_lots($link, $lots_limit, mysqli_real_escape_string($link, $search['text']), $category_id, $page_id);
 
 $lots_list = include_template('_lots-list.php', array_merge($init_data, [
-    'lots' => $lots
+    'lots' => $lots,
+    'not_found_message' => 'Ничего не найдено по вашему запросу.'
 ]));
 $page_content = include_template('search.php', array_merge($init_data, [
     'search' => $search,

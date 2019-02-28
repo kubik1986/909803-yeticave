@@ -41,11 +41,11 @@ function price_format($price, $ruble_sign = true) {
  */
 function num_format($num, $word) {
     $words = [
-        'ставка' => ['ставка', 'ставки', 'ставок'],
-        'минута' => ['минута', 'минуты', 'минут'],
-        'час' => ['час', 'часа', 'часов'],
-        'день' => ['день', 'дня', 'дней'],
-        'рубль' => ['рубль', 'рубля', 'рублей']
+        'bet' => ['ставка', 'ставки', 'ставок'],
+        'minute' => ['минута', 'минуты', 'минут'],
+        'hour' => ['час', 'часа', 'часов'],
+        'day' => ['день', 'дня', 'дней'],
+        'ruble' => ['рубль', 'рубля', 'рублей']
     ];
     $result = '';
     if (!isset($words[$word])) {
@@ -89,16 +89,17 @@ function get_lot_expiry_time($expiry_date) {
     $days_to_expiry = (int) floor($seconds_to_expiry / 86400);
     $hours_to_expiry = (int) floor(($seconds_to_expiry % 86400) / 3600);
     $minutes_to_expiry = (int) floor(($seconds_to_expiry % 3600) / 60);
+    $result = date('d.m.Y', $expiry_time);
     if ($seconds_to_expiry <= 0) {
-        return 'Торги окончены';
+        $result = 'Торги окончены';
     }
-    if ($days_to_expiry === 0) {
-        return sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
+    elseif ($days_to_expiry === 0) {
+        $result = sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
     }
     elseif ($days_to_expiry <= 3) {
-        return sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'день'));
+        $result = sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'day'));
     }
-    return date('d.m.Y', $expiry_time);
+    return $result;
 }
 
 /**
@@ -109,16 +110,35 @@ function get_lot_expiry_time($expiry_date) {
  * @return string CSS-класс таймера
  */
 function get_lots_timer_class($expiry_date, $min_hours = 6) {
+    $lots_timer_class = '';
     $expiry_time = strtotime($expiry_date);
     $seconds_to_expiry = $expiry_time - time();
     $total_hours_to_expiry = (int) floor($seconds_to_expiry / 3600);
     if (time() >= $expiry_time) {
-        return ' timer--end';
+        $lots_timer_class = ' timer--end';
     }
     else if ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
-        return ' timer--finishing';
+        $lots_timer_class = ' timer--finishing';
     }
-    return '';
+    return $lots_timer_class;
+}
+
+/**
+ * Возвращает CSS-класс элемента (строки) таблицы ставок пользователя
+ *
+ * @param array $bet Массив данных ставки
+ * @param array $user Массив данных пользователя
+ * @return string CSS-класс строки таблицы ставок
+ */
+function get_rates_item_class($bet, $user) {
+    $rate_item_class = '';
+    if ($bet['winner_id'] === $user['user_id']) {
+        $rate_item_class = ' rates__item--win';
+    }
+    elseif (is_lot_closed($bet['lot_expiry_date'])) {
+        $rate_item_class = ' rates__item--end';
+    }
+    return $rate_item_class;
 }
 
 /**
@@ -129,6 +149,7 @@ function get_lots_timer_class($expiry_date, $min_hours = 6) {
  */
 function get_bet_add_time($adding_time) {
     $add_time = strtotime($adding_time);
+    $result = date('d.m.y в H:i', $add_time);
     if ($add_time > time()) {
         return 'Ошибка! Время больше текущего';
     }
@@ -136,24 +157,24 @@ function get_bet_add_time($adding_time) {
     $days_passed = (int) floor($seconds_passed / 86400);
     $hours_passed = (int) floor(($seconds_passed % 86400) / 3600);
     $minutes_passed = (int) floor(($seconds_passed % 3600) / 60);
-    if ($days_passed === 0) {
-        if ($hours_passed === 0) {
-            if ($minutes_passed === 0) {
-                return $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
-            }
-            return $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'минута'));
-        }
-        elseif ($hours_passed > 0 && $hours_passed <= 10) {
-            return $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'час'));
-        }
+    if ($add_time >= strtotime('yesterday')) {
+        $result = sprintf('Вчера в %s', date('H:i', $add_time));
     }
     if ($add_time >= strtotime('today')) {
-        return sprintf('Сегодня в %s', date('H:i', $add_time));
+        $result = sprintf('Сегодня в %s', date('H:i', $add_time));
     }
-    elseif ($add_time >= strtotime('yesterday')) {
-        return sprintf('Вчера в %s', date('H:i', $add_time));
+    if ($days_passed === 0) {
+        if ($hours_passed === 0 && $minutes_passed === 0) {
+            $result = $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
+        }
+        elseif ($hours_passed === 0) {
+            $result = $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'minute'));
+        }
+        elseif ($hours_passed > 0 && $hours_passed <= 10) {
+            $result = $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'hour'));
+        }
     }
-    return date('d.m.y в H:i', $add_time);
+    return $result;
 }
 
 /**
@@ -220,24 +241,42 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
  * @param string $src Полный путь к файлу исходного изображения
  * @param string $dest Полный путь к файлу целевого изображения
  * @param int thumb_width Ширина целевого изображения в px
- * @return void
+ * @return bool true - миниатюра создана, false - миниатюра не создана.
  */
 function make_thumb($src, $dest, $thumb_width) {
-    $file_type = mime_content_type($src);
-    $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
-    $width = imagesx($source_image);
-    $height = imagesy($source_image);
-
-    $thumb_height = floor($height * ($thumb_width / $width));
-    $virtual_image = imagecreatetruecolor($thumb_width, $thumb_height);
-    if ($file_type === 'image/png') {
-        imageAlphaBlending($virtual_image, false);
-        imageSaveAlpha($virtual_image, true);
+    $result = false;
+    $gd_module = 'php_gd2.dll';
+    if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+        $gd_module = 'gd2.os';
     }
+    if (extension_loaded('gd') || (!extension_loaded('gd') && dl($gd_module))) {
+        $file_type = mime_content_type($src);
+        $source_image = $file_type === 'image/jpeg' ? imagecreatefromjpeg($src) : imagecreatefrompng($src);
+        $width = imagesx($source_image);
+        $height = imagesy($source_image);
 
-    imagecopyresampled($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
-    $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
-    imagedestroy($virtual_image);
+        $create = 'imagecreatetruecolor';
+        $copy = 'imagecopyresampled';
+        if (!function_exists('imagecreatetruecolor')) {
+            $create = 'imagecreate';
+            $copy = 'imagecopyresized';
+        }
+        $thumb_height = floor($height * ($thumb_width / $width));
+        $virtual_image = $create($thumb_width, $thumb_height);
+        if ($file_type === 'image/png') {
+            imageAlphaBlending($virtual_image, false);
+            imageSaveAlpha($virtual_image, true);
+        }
+
+        $copy($virtual_image, $source_image, 0, 0, 0, 0, $thumb_width, $thumb_height, $width, $height);
+        $file_type === 'image/jpeg' ? imagejpeg($virtual_image, $dest, 100) : imagepng($virtual_image, $dest);
+        imagedestroy($virtual_image);
+        if (file_exists($dest)) {
+            $result = true;
+
+        }
+    }
+    return $result;
 }
 
 /**
