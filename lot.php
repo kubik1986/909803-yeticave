@@ -23,10 +23,17 @@ $data = [];
 // Ошибки валидации
 $errors = [];
 
+// Флаг показа формы добавления ставки
+$show_add_bet_form = false;
+if (!is_lot_closed($lot['expiry_date'])
+    && !empty($user)
+    && $user['user_id'] !== $lot['author_id']
+    && (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])) {
+    $show_add_bet_form = true;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (empty($user)
-        || $user['user_id'] === $lot['author_id']
-        || (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
+    if (!$show_add_bet_form) {
         header("Location: lot.php?id=" . $lot_id);
         exit();
     }
@@ -71,7 +78,7 @@ $page_content = include_template('lot.php', array_merge($init_data, [
     'data' => $data,
     'lot' => $lot,
     'bets' => $bets,
-    'user' => $user
+    'show_add_bet_form' => $show_add_bet_form
 ]));
 $layout_content = include_template('layout.php', array_merge($init_data, [
     'title' => $lot['title'],
