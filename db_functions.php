@@ -254,9 +254,9 @@ function db_get_user_bets($link, $user_id)
         "SELECT l.lot_id, l.title AS lot_title, c.name AS category, l.expiry_date AS lot_expiry_date, MAX(amount) AS amount, MAX(b.adding_date) AS adding_date, l.winner_id, l.img, l.author_id AS lot_author_id, u.contacts AS lot_author_contacts
             FROM bets b
             JOIN lots l USING (lot_id)
-            JOIN users u USING (user_id)
+            JOIN users u ON u.user_id = l.author_id
             JOIN categories c USING (category_id)
-            WHERE user_id = $user_id
+            WHERE b.user_id = $user_id
             GROUP BY l.lot_id, l.title, c.name, l.expiry_date, l.winner_id, l.img, l.author_id, u.contacts
             ORDER BY adding_date DESC";
     if ($query = mysqli_query($link, $sql)) {
