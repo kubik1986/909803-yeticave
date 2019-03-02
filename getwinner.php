@@ -27,7 +27,12 @@ if(!empty($lots)) {
                 'winner' => $winner
             ]);
             $message->setBody($message_content, 'text/html');
-            $result = $mailer->send($message);
+            try {
+                $result = $mailer->send($message);
+            }
+            catch (Swift_TransportException $ex) {
+                print($ex->getMessage() . '<br>');
+            }
         }
     }
 }
