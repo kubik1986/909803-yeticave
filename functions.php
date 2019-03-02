@@ -6,7 +6,8 @@
  * @param array $data Данные для вставки на место переменных в шаблоне
  * @return string HTML-разметка блока/основного контента/лэйаута
  */
-function include_template($name, $data) {
+function include_template($name, $data)
+{
     $name = 'templates/' . $name;
     $result = '';
     if (!is_readable($name)) {
@@ -26,7 +27,8 @@ function include_template($name, $data) {
  * @param bool $ruble_sign параметр, определяющий добавление знака рубля (true - знак рубля добавляется, false - выводится только числовое значение)
  * @return string Отформатированная строка цены
  */
-function price_format($price, $ruble_sign = true) {
+function price_format($price, $ruble_sign = true)
+{
     $formated_price = ceil($price);
     $formated_price = number_format($formated_price, 0, ',', ' ');
     return $ruble_sign ? $formated_price . '<b class="rub">р</b>' : $formated_price;
@@ -39,7 +41,8 @@ function price_format($price, $ruble_sign = true) {
  * @param string $word Наименование (существительное) для склонения из предопределенного массива
  * @return string Наименование в правильном падеже
  */
-function num_format($num, $word) {
+function num_format($num, $word)
+{
     $words = [
         'bet' => ['ставка', 'ставки', 'ставок'],
         'minute' => ['минута', 'минуты', 'минут'],
@@ -57,11 +60,9 @@ function num_format($num, $word) {
     }
     if ($count === 1) {
         $result = $words[$word][0];
-    }
-    else if ($count >= 2 && $count <= 4) {
+    } elseif ($count >= 2 && $count <= 4) {
         $result = $words[$word][1];
-    }
-    else {
+    } else {
         $result = $words[$word][2];
     }
     return $result;
@@ -73,7 +74,8 @@ function num_format($num, $word) {
  * @param string $expiry_date Дата окончания торгов
  * @return bool true - аукцион закончился, false - аукцион не закончился
  */
-function is_lot_closed($expiry_date) {
+function is_lot_closed($expiry_date)
+{
     return time() >= strtotime($expiry_date);
 }
 
@@ -83,7 +85,8 @@ function is_lot_closed($expiry_date) {
  * @param string $expiry_date Дата окончания торгов
  * @return string Время до окончания торгов
  */
-function get_lot_expiry_time($expiry_date) {
+function get_lot_expiry_time($expiry_date)
+{
     $expiry_time = strtotime($expiry_date);
     $seconds_to_expiry = $expiry_time - time();
     $days_to_expiry = (int) floor($seconds_to_expiry / 86400);
@@ -92,11 +95,9 @@ function get_lot_expiry_time($expiry_date) {
     $result = date('d.m.Y', $expiry_time);
     if ($seconds_to_expiry <= 0) {
         $result = 'Торги окончены';
-    }
-    elseif ($days_to_expiry === 0) {
+    } elseif ($days_to_expiry === 0) {
         $result = sprintf('%02d:%02d', $hours_to_expiry, $minutes_to_expiry);
-    }
-    elseif ($days_to_expiry <= 3) {
+    } elseif ($days_to_expiry <= 3) {
         $result = sprintf('%d %s', $days_to_expiry, num_format($days_to_expiry, 'day'));
     }
     return $result;
@@ -109,15 +110,15 @@ function get_lot_expiry_time($expiry_date) {
  * @param int $min_hours Количество часов (<= 24) до конца торгов, меньше которого аукцион считается заканчивающимся
  * @return string CSS-класс таймера
  */
-function get_lots_timer_class($expiry_date, $min_hours = 6) {
+function get_lots_timer_class($expiry_date, $min_hours = 6)
+{
     $lots_timer_class = '';
     $expiry_time = strtotime($expiry_date);
     $seconds_to_expiry = $expiry_time - time();
     $total_hours_to_expiry = (int) floor($seconds_to_expiry / 3600);
     if (time() >= $expiry_time) {
         $lots_timer_class = ' timer--end';
-    }
-    else if ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
+    } elseif ($total_hours_to_expiry > 0 && $total_hours_to_expiry < $min_hours) {
         $lots_timer_class = ' timer--finishing';
     }
     return $lots_timer_class;
@@ -130,12 +131,12 @@ function get_lots_timer_class($expiry_date, $min_hours = 6) {
  * @param array $user Массив данных пользователя
  * @return string CSS-класс строки таблицы ставок
  */
-function get_rates_item_class($bet, $user) {
+function get_rates_item_class($bet, $user)
+{
     $rate_item_class = '';
     if ($bet['winner_id'] === $user['user_id']) {
         $rate_item_class = ' rates__item--win';
-    }
-    elseif (is_lot_closed($bet['lot_expiry_date'])) {
+    } elseif (is_lot_closed($bet['lot_expiry_date'])) {
         $rate_item_class = ' rates__item--end';
     }
     return $rate_item_class;
@@ -147,7 +148,8 @@ function get_rates_item_class($bet, $user) {
  * @param string $adding_time Дата и время добавления ставки
  * @return string Отформатированное время добавления ставки
  */
-function get_bet_add_time($adding_time) {
+function get_bet_add_time($adding_time)
+{
     $add_time = strtotime($adding_time);
     $result = date('d.m.y в H:i', $add_time);
     if ($add_time > time()) {
@@ -166,11 +168,9 @@ function get_bet_add_time($adding_time) {
     if ($days_passed === 0) {
         if ($hours_passed === 0 && $minutes_passed === 0) {
             $result = $seconds_passed <= 30 ? 'Только что' : 'Минута назад';
-        }
-        elseif ($hours_passed === 0) {
+        } elseif ($hours_passed === 0) {
             $result = $minutes_passed === 1 ? 'Минута назад' : sprintf('%d %s назад', $minutes_passed, num_format($minutes_passed, 'minute'));
-        }
-        elseif ($hours_passed > 0 && $hours_passed <= 10) {
+        } elseif ($hours_passed > 0 && $hours_passed <= 10) {
             $result = $hours_passed === 1 ? 'Час назад' : sprintf('%d %s назад', $hours_passed, num_format($hours_passed, 'hour'));
         }
     }
@@ -186,7 +186,8 @@ function get_bet_add_time($adding_time) {
  * @param int $max_pages Максимальное количество страниц, отображаемое в списке
  * @return array Двумерный массив данных, каждый элемент которого содержит номер страницы, css-класс элемента списка и текст атрибута href
  */
-function get_pagination_data($pages_count, $current_page, $url_data, $max_pages = 9) {
+function get_pagination_data($pages_count, $current_page, $url_data, $max_pages = 9)
+{
     if ($pages_count <= 1) {
         return [];
     }
@@ -213,8 +214,7 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
         $page_number = $i; // текущая страница в начале списка
         if ($left > $left_min && $right > $right_min) { // текущая страница где-то в середине списка
             $page_number = $i + $current_page - $mid_pos;
-        }
-        elseif ($right <= $right_min) { // текущая страница в конце списка
+        } elseif ($right <= $right_min) { // текущая страница в конце списка
             $page_number = $i + $pages_count - $max_pages;
         }
         $page_href = '';
@@ -243,7 +243,8 @@ function get_pagination_data($pages_count, $current_page, $url_data, $max_pages 
  * @param int thumb_width Ширина целевого изображения в px
  * @return bool true - миниатюра создана, false - миниатюра не создана.
  */
-function make_thumb($src, $dest, $thumb_width) {
+function make_thumb($src, $dest, $thumb_width)
+{
     $result = false;
     $gd_module = 'php_gd2.dll';
     if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
@@ -273,7 +274,6 @@ function make_thumb($src, $dest, $thumb_width) {
         imagedestroy($virtual_image);
         if (file_exists($dest)) {
             $result = true;
-
         }
     }
     return $result;
@@ -289,7 +289,8 @@ function make_thumb($src, $dest, $thumb_width) {
  * @param array $categories Массив категорий для заполнения шаблона
  * @return void
  */
-function show_error($http_code, $message, $init_data, $user, $categories) {
+function show_error($http_code, $message, $init_data, $user, $categories)
+{
     $http_codes = [
         '401' => ['title' => '401 - Требуется авторизация',
                   'header' => 'HTTP/1.1 401 Unauthorized'],
@@ -314,4 +315,3 @@ function show_error($http_code, $message, $init_data, $user, $categories) {
     ]));
     print($layout_content);
 }
-?>

@@ -3,4 +3,3 @@
     $_SESSION['user'] = [];
     header("Location: /");
     exit();
-?>

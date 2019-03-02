@@ -11,10 +11,9 @@ $search = [
 ];
 
 if (!isset($_GET['search']) || empty(trim($_GET['search']))) {
-    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME'])) {
+    if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'http://' . $_SERVER['SERVER_NAME']) === 0) {
         header("Location: " . $_SERVER['HTTP_REFERER']);
-    }
-    else {
+    } else {
         header("Location: /");
     }
     exit();
@@ -30,8 +29,7 @@ if (isset($_GET['category'])) {
     if (!empty($category)) {
         $search['category'] = $category['name'];
         $init_data['current_category'] = $category;
-    }
-    else {
+    } else {
         $category_id = 0;
     }
 }
@@ -76,4 +74,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>

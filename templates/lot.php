@@ -22,10 +22,7 @@
                         Мин. ставка <span><?=price_format($lot['price'] + $lot['bet_step'], false); ?> р</span>
                     </div>
                 </div>
-                <?php if (!is_lot_closed($lot['expiry_date'])
-                    && !empty($user)
-                    && $user['user_id'] !== $lot['author_id']
-                    && (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])): ?>
+                <?php if ($show_add_bet_form): ?>
                 <form class="lot-item__form" action="lot.php?id=<?=$lot['lot_id']; ?>" method="post">
                     <p class="lot-item__form-item form__item<?=!isset($errors['cost']) ? '' : ' form__item--invalid'; ?>">
                         <label for="cost">Ваша ставка</label>
@@ -40,7 +37,7 @@
                 <h3>История ставок (<span><?=count($bets); ?></span>)</h3>
                 <?php if (!empty($bets)): ?>
                 <table class="history__list">
-                    <?php foreach($bets as $bet): ?>
+                    <?php foreach ($bets as $bet): ?>
                     <tr class="history__item">
                         <td class="history__name"><?=htmlspecialchars($bet['user']); ?></td>
                         <td class="history__price"><?=price_format($bet['amount'], false); ?> р</td>

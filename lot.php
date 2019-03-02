@@ -10,7 +10,7 @@ $lot_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $lot = !empty($lot_id) ? db_get_lot($link, $lot_id) : [];
 
 if (empty($lot)) {
-    show_error('404', 'Данной страницы не существует на сайте.',  $init_data, $user, $categories);
+    show_error('404', 'Данной страницы не существует на сайте.', $init_data, $user, $categories);
     exit();
 }
 
@@ -23,28 +23,32 @@ $data = [];
 // Ошибки валидации
 $errors = [];
 
+// Флаг показа формы добавления ставки
+$show_add_bet_form = false;
+if (!is_lot_closed($lot['expiry_date'])
+    && !empty($user)
+    && $user['user_id'] !== $lot['author_id']
+    && (empty($bets) || $bets[0]['user_id'] !== $user['user_id'])) {
+    $show_add_bet_form = true;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (empty($user)
-        || $user['user_id'] === $lot['author_id']
-        || (!empty($bets) && $bets[0]['user_id'] === $user['user_id'])) {
-            header("Location: lot.php?id=" . $lot_id);
-            exit();
+    if (!$show_add_bet_form) {
+        header("Location: lot.php?id=" . $lot_id);
+        exit();
     }
 
     if (isset($_POST['cost']) && !empty(trim($_POST['cost']))) {
         $data['cost'] = trim($_POST['cost']);
-    }
-    else {
+    } else {
         $errors['cost'] = 'Это поле необходимо заполнить';
     }
     if (empty($errors['cost'])) {
         if (!ctype_digit($data['cost']) || $data['cost'] <= 0) {
             $errors['cost'] = 'Ставка должна быть целым положительным числом';
-        }
-        elseif ($data['cost'] < $lot['price'] + $lot['bet_step']) {
+        } elseif ($data['cost'] < $lot['price'] + $lot['bet_step']) {
             $errors['cost'] = 'Ставка должна быть не меньше минимальной';
-        }
-        elseif ($data['cost'] - $lot['price'] > $max_bet_step) {
+        } elseif ($data['cost'] - $lot['price'] > $max_bet_step) {
             $errors['cost'] = 'Ставка слишком высока. Максимальный шаг ставки - ' . $max_bet_step . ' р';
         }
     }
@@ -53,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['user_id'] = $user['user_id'];
         $data['lot_id'] = $lot_id;
         if (is_lot_closed($lot['expiry_date'])) {
-            show_error('403', 'Вы не можете сделать ставку, так как аукцион по этому лоту завершен.',  $init_data, $user, $categories);
+            show_error('403', 'Вы не можете сделать ставку, так как аукцион по этому лоту завершен.', $init_data, $user, $categories);
             exit();
         }
         $bet_id = db_add_bet($link, $data);
@@ -74,7 +78,7 @@ $page_content = include_template('lot.php', array_merge($init_data, [
     'data' => $data,
     'lot' => $lot,
     'bets' => $bets,
-    'user' => $user
+    'show_add_bet_form' => $show_add_bet_form
 ]));
 $layout_content = include_template('layout.php', array_merge($init_data, [
     'title' => $lot['title'],
@@ -83,4 +87,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>
