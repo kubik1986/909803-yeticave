@@ -2,7 +2,7 @@
 require_once('init.php');
 
 if (empty($user)) {
-    show_error('401', 'Добавление лотов доступно только авторизованным пользователям. Пожалуйста, войдите в свой аккаунт, если у вас уже есть учетная запись, или зарегистрируйтесь.',  $init_data, $user, $categories);
+    show_error('401', 'Добавление лотов доступно только авторизованным пользователям. Пожалуйста, войдите в свой аккаунт, если у вас уже есть учетная запись, или зарегистрируйтесь.', $init_data, $user, $categories);
     exit();
 }
 
@@ -25,8 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($keys as $key) {
         if (isset($_POST[$key]) && !empty(trim($_POST[$key]))) {
             $data[$key] = trim($_POST[$key]);
-        }
-        else {
+        } else {
             $errors[$key] = 'Это поле необходимо заполнить';
         }
     }
@@ -45,19 +44,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['lot-rate'] = str_replace(',', '.', $data['lot-rate']);
         if (!is_numeric($data['lot-rate']) || $data['lot-rate'] <= 0) {
             $errors['lot-rate'] = 'Цена должна быть положительным числом';
-        }
-        elseif ($data['lot-rate'] > $max_price) {
+        } elseif ($data['lot-rate'] > $max_price) {
             $errors['lot-rate'] = 'Цена слишком высокая. Максимальная цена - ' . $max_price . ' р';
-        }
-        else {
+        } else {
             $data['lot-rate'] = ceil($data['lot-rate']);
         }
     }
     if (empty($errors['lot-step'])) {
         if (!ctype_digit($data['lot-step']) || $data['lot-step'] <= 0) {
             $errors['lot-step'] = 'Шаг ставки должен быть целым положительным числом';
-        }
-        elseif ($data['lot-step'] > $max_bet_step) {
+        } elseif ($data['lot-step'] > $max_bet_step) {
             $errors['lot-step'] = 'Шаг ставки слишком высок. Максимальный шаг - ' . $max_bet_step . ' р';
         }
     }
@@ -66,8 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data['lot-date'] = !$date ? $data['lot-date'] : date('Y-m-d', $date);
         if (!$date) {
             $errors['lot-date'] = 'Дата некорректна';
-        }
-        elseif (time() >= $date) {
+        } elseif (time() >= $date) {
             $errors['lot-date'] = 'Дата окончания лота должна быть на 1 день больше текущей даты';
         }
     }
@@ -78,20 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $file_type = mime_content_type($tmp_name);
         if ($file_type !== 'image/png' && $file_type !== 'image/jpeg') {
             $errors['photo'] = 'Неправильный тип файла. Загрузите файл в формате jpeg, jpg или png';
-        }
-        elseif ($file_size > $max_file_size * 1024 * 1024) {
+        } elseif ($file_size > $max_file_size * 1024 * 1024) {
             $errors['photo'] = 'Размер файла больше допустимого. Максимальный размер - ' . $max_file_size . ' МБ';
-        }
-        else {
+        } else {
             $file_extension = $file_type === 'image/jpeg' ? '.jpg' : '.png';
             $file_name = uniqid('lot-' . $user['user_id'] . '-') . $file_extension;
         }
-    }
-    else {
+    } else {
         $errors['photo'] = 'Загрузите файл с изображением лота';
     }
 
-    if(empty($errors)) {
+    if (empty($errors)) {
         $file_dir =  $init_data['lot_img_path'];
         move_uploaded_file($_FILES['photo']['tmp_name'], $file_dir . $file_name);
         $data['author'] = $user['user_id'];
@@ -121,4 +113,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>

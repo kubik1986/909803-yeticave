@@ -1,7 +1,7 @@
 <?php
 require_once('init.php');
 
-if(!empty($user)) {
+if (!empty($user)) {
     header("Location: /");
     exit();
 }
@@ -25,8 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     foreach ($keys as $key) {
         if (isset($_POST[$key]) && !empty(trim($_POST[$key]))) {
             $data[$key] = trim($_POST[$key]);
-        }
-        else {
+        } else {
             $errors[$key] = 'Это поле необходимо заполнить';
         }
     }
@@ -34,16 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors['email'])) {
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Некорректный формат адреса электронной почты';
-        }
-        elseif (db_is_registered_email($link, mysqli_real_escape_string($link, $data['email']))) {
+        } elseif (db_is_registered_email($link, mysqli_real_escape_string($link, $data['email']))) {
             $errors['email'] = 'Пользователь с указанным e-mail уже зарегистрирован';
         }
     }
     if (empty($errors['password'])) {
         if (strlen($data['password']) < $psw_min_length) {
             $errors['password'] = 'Минимальная длина пароля - ' . $psw_min_length . ' символов';
-        }
-        elseif (strlen($data['password']) > $psw_max_length) {
+        } elseif (strlen($data['password']) > $psw_max_length) {
             $errors['password'] = 'Максимальная длина пароля - ' . $psw_max_length . ' символов';
         }
     }
@@ -60,18 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $file_type = mime_content_type($tmp_name);
         if ($file_type !== 'image/png' && $file_type !== 'image/jpeg') {
             $errors['avatar'] = 'Неправильный тип файла. Загрузите файл в формате jpeg, jpg или png';
-        }
-        elseif ($file_size > $max_file_size * 1024) {
+        } elseif ($file_size > $max_file_size * 1024) {
             $errors['avatar'] = 'Размер файла больше допустимого. Максимальный размер - ' . $max_file_size . ' КБ';
-        }
-        else {
+        } else {
             $file_extension = $file_type === 'image/jpeg' ? '.jpg' : '.png';
             $file_name = uniqid('user-') . $file_extension;
         }
     }
 
-    if(empty($errors)) {
-        if(!empty($file_name)) {
+    if (empty($errors)) {
+        if (!empty($file_name)) {
             $file_dir = $init_data['avatar_path'];
             move_uploaded_file($_FILES['avatar']['tmp_name'], $file_dir . $file_name);
             $data['file-name'] = $file_name;
@@ -94,4 +89,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>

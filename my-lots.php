@@ -1,7 +1,7 @@
 <?php
 require_once('init.php');
 
-if(empty($user)) {
+if (empty($user)) {
     header("Location: login.php");
     exit();
 }
@@ -19,4 +19,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>

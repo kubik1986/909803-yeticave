@@ -40,7 +40,7 @@
                 <h3>История ставок (<span><?=count($bets); ?></span>)</h3>
                 <?php if (!empty($bets)): ?>
                 <table class="history__list">
-                    <?php foreach($bets as $bet): ?>
+                    <?php foreach ($bets as $bet): ?>
                     <tr class="history__item">
                         <td class="history__name"><?=htmlspecialchars($bet['user']); ?></td>
                         <td class="history__price"><?=price_format($bet['amount'], false); ?> р</td>

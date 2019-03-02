@@ -43,4 +43,3 @@ $layout_content = include_template('layout.php', array_merge($init_data, [
     'categories' => $categories
 ]));
 print($layout_content);
-?>

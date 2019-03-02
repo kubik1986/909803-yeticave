@@ -26,4 +26,3 @@ $init_data = [
 
 // Категории
 $categories = db_get_categories($link);
-?>

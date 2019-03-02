@@ -8,7 +8,8 @@
  *
  * @return mysqli_stmt Подготовленное выражение
  */
-function db_get_prepare_stmt($link, $sql, $data = []) {
+function db_get_prepare_stmt($link, $sql, $data = [])
+{
     $stmt = mysqli_prepare($link, $sql);
     if ($data) {
         $types = '';
@@ -17,11 +18,9 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
             $type = null;
             if (is_int($value)) {
                 $type = 'i';
-            }
-            else if (is_string($value)) {
+            } elseif (is_string($value)) {
                 $type = 's';
-            }
-            else if (is_double($value)) {
+            } elseif (is_double($value)) {
                 $type = 'd';
             }
             if ($type) {
@@ -42,7 +41,8 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
  * @param array $db Массив с параметрами подключения
  * @return mysqli $link Идентификатор подключения к серверу MySQL
  */
-function db_connect($db) {
+function db_connect($db)
+{
     $link = mysqli_connect($db['host'], $db['user'], $db['password'], $db['database']);
     if ($link) {
         $sql = "SET time_zone = '" . $db['timezone'] . "'";
@@ -61,7 +61,8 @@ function db_connect($db) {
  * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
  * @return array Массив категорий или массив данных указанной категории
  */
-function db_get_categories($link, $where=[]) {
+function db_get_categories($link, $where=[])
+{
     $result = [];
     $sql_where = '';
     if (!empty($where)) {
@@ -73,8 +74,7 @@ function db_get_categories($link, $where=[]) {
             $sql_where";
     if ($query = mysqli_query($link, $sql)) {
         $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -91,7 +91,8 @@ function db_get_categories($link, $where=[]) {
  * @param bool $records_count Параметр, определяющий тип результата вычисления (false - массив лотов, true - количество лотов)
  * @return array|int Массив открытых лотов|количество открытых лотов
  */
-function db_get_opened_lots($link, $limit, $search_text = false, $category_id = false, $page_id = false, $records_count = false) {
+function db_get_opened_lots($link, $limit, $search_text = false, $category_id = false, $page_id = false, $records_count = false)
+{
     $result_array = [];
     $result_count = 0;
     $category_filter = empty($category_id) ? '' : 'AND c.category_id = ' . $category_id;
@@ -111,12 +112,10 @@ function db_get_opened_lots($link, $limit, $search_text = false, $category_id = 
     if ($query = mysqli_query($link, $sql)) {
         if ($records_count) {
             $result_count = mysqli_num_rows($query);
-        }
-        else {
+        } else {
             $result_array = mysqli_fetch_all($query, MYSQLI_ASSOC);
         }
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $records_count ? $result_count : $result_array;
@@ -128,7 +127,8 @@ function db_get_opened_lots($link, $limit, $search_text = false, $category_id = 
  * @param mysqli $link Идентификатор подключения к серверу MySQL
  * @return array Массив лотов без победителя
  */
-function db_get_closed_lots_without_winner($link) {
+function db_get_closed_lots_without_winner($link)
+{
     $result = [];
     $sql =
         "SELECT lot_id, title, author_id
@@ -136,8 +136,7 @@ function db_get_closed_lots_without_winner($link) {
             WHERE expiry_date <= NOW() AND winner_id IS NULL";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -150,7 +149,8 @@ function db_get_closed_lots_without_winner($link) {
  * @param int $lot_id ID лота
  * @return array Массив данных указанного лота
  */
-function db_get_lot($link, $lot_id) {
+function db_get_lot($link, $lot_id)
+{
     $result = [];
     $sql =
         "SELECT l.*, c.name AS category, COALESCE((SELECT MAX(amount) FROM bets WHERE lot_id = $lot_id), starting_price) AS price
@@ -159,8 +159,7 @@ function db_get_lot($link, $lot_id) {
             WHERE lot_id = $lot_id";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_array($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -173,7 +172,8 @@ function db_get_lot($link, $lot_id) {
  * @param array $data Массив данных для подготовленного выражения
  * @return string Идентификатор записанной строки
  */
-function db_add_lot($link, $data) {
+function db_add_lot($link, $data)
+{
     $lot_id = '';
     $sql =
         "INSERT INTO lots (title, description, img, starting_price, expiry_date, bet_step, category_id, author_id)
@@ -191,8 +191,7 @@ function db_add_lot($link, $data) {
     $result = mysqli_stmt_execute($stmt);
     if ($result) {
         $lot_id = mysqli_insert_id($link);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $lot_id;
@@ -206,7 +205,8 @@ function db_add_lot($link, $data) {
  * @param int $winner_id ID победителя аукциона
  * @return void
  */
-function db_update_lot_winner($link, $lot_id, $winner_id) {
+function db_update_lot_winner($link, $lot_id, $winner_id)
+{
     $sql =
         "UPDATE lots
             SET winner_id = $winner_id
@@ -223,7 +223,8 @@ function db_update_lot_winner($link, $lot_id, $winner_id) {
  * @param int $lot_id ID лота
  * @return array Массив ставок для указанного лота
  */
-function db_get_bets($link, $lot_id) {
+function db_get_bets($link, $lot_id)
+{
     $result = [];
     $sql =
         "SELECT adding_date, amount, b.user_id, u.name AS user
@@ -233,8 +234,7 @@ function db_get_bets($link, $lot_id) {
             ORDER BY adding_date DESC";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -247,7 +247,8 @@ function db_get_bets($link, $lot_id) {
  * @param int $user_id ID пользователя
  * @return array Массив ставок указанного пользователя
  */
-function db_get_user_bets($link, $user_id) {
+function db_get_user_bets($link, $user_id)
+{
     $result = [];
     $sql =
         "SELECT l.lot_id, l.title AS lot_title, c.name AS category, l.expiry_date AS lot_expiry_date, MAX(amount) AS amount, MAX(b.adding_date) AS adding_date, l.winner_id, l.img, l.author_id AS lot_author_id, u.contacts AS lot_author_contacts
@@ -260,8 +261,7 @@ function db_get_user_bets($link, $user_id) {
             ORDER BY adding_date DESC";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_fetch_all($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -274,7 +274,8 @@ function db_get_user_bets($link, $user_id) {
  * @param array $data Массив данных для подготовленного выражения
  * @return string Идентификатор записанной строки
  */
-function db_add_bet($link, $data) {
+function db_add_bet($link, $data)
+{
     $bet_id = '';
     $sql =
         "INSERT INTO bets (amount, user_id, lot_id)
@@ -287,8 +288,7 @@ function db_add_bet($link, $data) {
     $result = mysqli_stmt_execute($stmt);
     if ($result) {
         $bet_id = mysqli_insert_id($link);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $bet_id;
@@ -301,7 +301,8 @@ function db_add_bet($link, $data) {
  * @param string $email E-mail адрес
  * @return bool true - запись с указанным e-mail найдена, false - запись не найдена
  */
-function db_is_registered_email($link, $email) {
+function db_is_registered_email($link, $email)
+{
     $result = 0;
     $sql =
         "SELECT user_id
@@ -309,8 +310,7 @@ function db_is_registered_email($link, $email) {
             WHERE email = '$email'";
     if ($query = mysqli_query($link, $sql)) {
         $result = mysqli_num_rows($query);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return !($result === 0);
@@ -323,7 +323,8 @@ function db_is_registered_email($link, $email) {
  * @param array $where Ассоциативный массив вида [<имя_поля_таблицы_БД> => <значение_поля>], указывающий фильтр поиска
  * @return array Массив данных пользователя
  */
-function db_get_users($link, $where = []) {
+function db_get_users($link, $where = [])
+{
     $result = [];
     $sql_where = '';
     if (!empty($where)) {
@@ -335,8 +336,7 @@ function db_get_users($link, $where = []) {
             $sql_where";
     if ($query = mysqli_query($link, $sql)) {
         $result = empty($where) ? mysqli_fetch_all($query, MYSQLI_ASSOC) : mysqli_fetch_array($query, MYSQLI_ASSOC);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $result;
@@ -349,7 +349,8 @@ function db_get_users($link, $where = []) {
  * @param array $data Массив данных для подготовленного выражения
  * @return string Идентификатор записанной строки
  */
-function db_add_user($link, $data) {
+function db_add_user($link, $data)
+{
     $user_id = '';
     $avatar_field = empty($data['file-name']) ? '' : ',avatar';
     $avatar_value = empty($data['file-name']) ? '' : ',?';
@@ -369,10 +370,8 @@ function db_add_user($link, $data) {
     $result = mysqli_stmt_execute($stmt);
     if ($result) {
         $user_id = mysqli_insert_id($link);
-    }
-    else {
+    } else {
         exit('Произошла ошибка. Попробуйте снова или обратитесь к администратору.');
     }
     return $user_id;
 }
-?>
