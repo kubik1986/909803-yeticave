@@ -18,7 +18,7 @@ $data = [];
 // Ошибки валидации
 $errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keys = ['lot-name', 'category', 'message', 'lot-rate', 'lot-step', 'lot-date'];
     $file_name = '';
 
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    if (is_uploaded_file($_FILES['photo']['tmp_name'])) {
+    if (isset($_FILES['photo']) && is_uploaded_file($_FILES['photo']['tmp_name'])) {
         $tmp_name = $_FILES['photo']['tmp_name'];
         $file_size = $_FILES['photo']['size'];
         $file_type = mime_content_type($tmp_name);

@@ -17,7 +17,7 @@ $is_auth_error = false;
 
 $user_data = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keys = ['email', 'password'];
 
     foreach ($keys as $key) {
