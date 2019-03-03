@@ -32,7 +32,7 @@ if (!is_lot_closed($lot['expiry_date'])
     $show_add_bet_form = true;
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$show_add_bet_form) {
         header("Location: lot.php?id=" . $lot_id);
         exit();

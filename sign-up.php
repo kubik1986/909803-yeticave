@@ -18,7 +18,7 @@ $data = [];
 // Ошибки валидации
 $errors = [];
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keys = ['email', 'password', 'name', 'contacts'];
     $file_name = '';
 
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['contacts'] = 'Сообщение слишком длинное. Максимальное количество символов - ' . $contacts_max_length;
     }
 
-    if (is_uploaded_file($_FILES['avatar']['tmp_name'])) {
+    if (isset($_FILES['avatar']) && is_uploaded_file($_FILES['avatar']['tmp_name'])) {
         $tmp_name = $_FILES['avatar']['tmp_name'];
         $file_size = $_FILES['avatar']['size'];
         $file_type = mime_content_type($tmp_name);
